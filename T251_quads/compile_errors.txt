@@ -1,0 +1,286 @@
+﻿> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+
+> Task :app:compileDebugJavaWithJavac FAILED
+.\gradlew.bat : C:\Users\Us
+uario\Desktop\universidad\t
+ercero\ingsoft\practicas\T2
+51_quads\app\src\main\java\
+es\unizar\eina\T251_quads\u
+i\ReservaEdit.java:500: 
+error: class, interface, 
+enum, or record expected
+En línea: 1 Carácter: 1
++ .\gradlew.bat build 
+--continue 2>&1 | Out-File 
+-FilePath "compile_err ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~
+    + CategoryInfo         
+     : NotSpecified: (C:\  
+  Users\Usuari...record    
+ expected:String) [], R    
+emoteException
+    + FullyQualifiedErrorI 
+   d : NativeCommandError
+ 
+     * La comparaci¾n se 
+ha realizado mediante 
+comparaci¾n alfanumÚrica 
+de strings
+     ^
+C:\Users\Usuario\Desktop\un
+iversidad\tercero\ingsoft\p
+racticas\T251_quads\app\src
+\main\java\es\unizar\eina\T
+251_quads\ui\ReservaEdit.ja
+va:503: error: class, 
+interface, enum, or record 
+expected
+     * @param fecha1 La 
+fecha de inicio en formato 
+YYYY-MM-DD.
+              ^
+C:\Users\Usuario\Desktop\un
+iversidad\tercero\ingsoft\p
+racticas\T251_quads\app\src
+\main\java\es\unizar\eina\T
+251_quads\ui\ReservaEdit.ja
+va:504: error: class, 
+interface, enum, or record 
+expected
+     * @param fecha2 La 
+fecha de fin en formato 
+YYYY-MM-DD.
+              ^
+C:\Users\Usuario\Desktop\un
+iversidad\tercero\ingsoft\p
+racticas\T251_quads\app\src
+\main\java\es\unizar\eina\T
+251_quads\ui\ReservaEdit.ja
+va:505: error: 
+<identifier> expected
+     * @return true si 
+fecha2 es posterior a 
+fecha1, false en caso 
+contrario.
+        ^
+C:\Users\Usuario\Desktop\un
+iversidad\tercero\ingsoft\p
+racticas\T251_quads\app\src
+\main\java\es\unizar\eina\T
+251_quads\ui\ReservaEdit.ja
+va:510: error: class, 
+interface, enum, or record 
+expected
+        } catch (Exception 
+e) {
+        ^
+C:\Users\Usuario\Desktop\un
+iversidad\tercero\ingsoft\p
+racticas\T251_quads\app\src
+\main\java\es\unizar\eina\T
+251_quads\ui\ReservaEdit.ja
+va:512: error: class, 
+interface, enum, or record 
+expected
+        }
+        ^
+6 errors
+
+> Task :app:mergeDebugShaders UP-TO-DATE
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets UP-TO-DATE
+> Task :app:compressDebugAssets UP-TO-DATE
+> Task :app:desugarDebugFileDependencies UP-TO-DATE
+> Task :app:checkDebugDuplicateClasses UP-TO-DATE
+> Task :app:mergeDebugStartupProfile UP-TO-DATE
+> Task :app:mergeExtDexDebug UP-TO-DATE
+> Task :app:mergeLibDexDebug UP-TO-DATE
+> Task :app:mergeDebugJniLibFolders UP-TO-DATE
+> Task :app:mergeDebugNativeLibs NO-SOURCE
+> Task :app:stripDebugDebugSymbols NO-SOURCE
+> Task :app:validateSigningDebug UP-TO-DATE
+> Task :app:writeDebugAppMetadata UP-TO-DATE
+> Task :app:writeDebugSigningConfigVersions UP-TO-DATE
+> Task :app:preReleaseBuild UP-TO-DATE
+> Task :app:generateReleaseResValues
+> Task :app:javaPreCompileRelease
+> Task :app:checkReleaseAarMetadata
+> Task :app:mapReleaseSourceSetPaths
+> Task :app:generateReleaseResources
+> Task :app:packageReleaseResources
+> Task :app:createReleaseCompatibleScreenManifests
+> Task :app:extractDeepLinksRelease
+> Task :app:parseReleaseLocalResources
+> Task :app:processReleaseMainManifest
+> Task :app:processReleaseManifest
+> Task :app:extractProguardFiles
+> Task :app:mergeReleaseJniLibFolders
+> Task :app:mergeReleaseNativeLibs NO-SOURCE
+> Task :app:stripReleaseDebugSymbols NO-SOURCE
+> Task :app:extractReleaseNativeSymbolTables NO-SOURCE
+> Task :app:mergeReleaseNativeDebugMetadata NO-SOURCE
+> Task :app:desugarReleaseFileDependencies
+> Task :app:mergeReleaseStartupProfile UP-TO-DATE
+> Task :app:checkReleaseDuplicateClasses
+> Task :app:mergeReleaseResources
+> Task :app:mergeReleaseArtProfile
+> Task :app:mergeReleaseShaders
+> Task :app:compileReleaseShaders NO-SOURCE
+> Task :app:generateReleaseAssets UP-TO-DATE
+> Task :app:mergeReleaseAssets
+> Task :app:compressReleaseAssets
+> Task :app:extractReleaseVersionControlInfo
+> Task :app:collectReleaseDependencies
+> Task :app:sdkReleaseDependencyData
+> Task :app:writeReleaseAppMetadata
+> Task :app:writeReleaseSigningConfigVersions
+> Task :app:preDebugAndroidTestBuild SKIPPED
+> Task :app:generateDebugAndroidTestResValues
+> Task :app:preDebugUnitTestBuild UP-TO-DATE
+> Task :app:javaPreCompileDebugUnitTest
+> Task :app:processDebugUnitTestJavaRes NO-SOURCE
+> Task :app:preReleaseUnitTestBuild UP-TO-DATE
+> Task :app:processReleaseUnitTestJavaRes NO-SOURCE
+> Task :app:javaPreCompileReleaseUnitTest
+> Task :app:processReleaseManifestForPackage
+> Task :app:mergeExtDexRelease
+> Task :app:processReleaseResources
+
+> Task :app:compileReleaseJavaWithJavac FAILED
+C:\Users\Usuario\Desktop\un
+iversidad\tercero\ingsoft\p
+racticas\T251_quads\app\src
+\main\java\es\unizar\eina\T
+251_quads\ui\ReservaEdit.ja
+va:500: error: class, 
+interface, enum, or record 
+expected
+     * La comparaci¾n se 
+ha realizado mediante 
+comparaci¾n alfanumÚrica 
+de strings
+     ^
+C:\Users\Usuario\Desktop\un
+iversidad\tercero\ingsoft\p
+racticas\T251_quads\app\src
+\main\java\es\unizar\eina\T
+251_quads\ui\ReservaEdit.ja
+va:503: error: class, 
+interface, enum, or record 
+expected
+     * @param fecha1 La 
+fecha de inicio en formato 
+YYYY-MM-DD.
+              ^
+C:\Users\Usuario\Desktop\un
+iversidad\tercero\ingsoft\p
+racticas\T251_quads\app\src
+\main\java\es\unizar\eina\T
+251_quads\ui\ReservaEdit.ja
+va:504: error: class, 
+interface, enum, or record 
+expected
+     * @param fecha2 La 
+fecha de fin en formato 
+YYYY-MM-DD.
+              ^
+C:\Users\Usuario\Desktop\un
+iversidad\tercero\ingsoft\p
+racticas\T251_quads\app\src
+\main\java\es\unizar\eina\T
+251_quads\ui\ReservaEdit.ja
+va:505: error: 
+<identifier> expected
+     * @return true si 
+fecha2 es posterior a 
+fecha1, false en caso 
+contrario.
+        ^
+C:\Users\Usuario\Desktop\un
+iversidad\tercero\ingsoft\p
+racticas\T251_quads\app\src
+\main\java\es\unizar\eina\T
+251_quads\ui\ReservaEdit.ja
+va:510: error: class, 
+interface, enum, or record 
+expected
+        } catch (Exception 
+e) {
+        ^
+C:\Users\Usuario\Desktop\un
+iversidad\tercero\ingsoft\p
+racticas\T251_quads\app\src
+\main\java\es\unizar\eina\T
+251_quads\ui\ReservaEdit.ja
+va:512: error: class, 
+interface, enum, or record 
+expected
+        }
+        ^
+6 errors
+
+> Task :app:optimizeReleaseResources
+
+FAILURE: Build completed 
+with 2 failures.
+
+1: Task failed with an 
+exception.
+-----------
+* What went wrong:
+Execution failed for task '
+:app:compileDebugJavaWithJa
+vac'.
+> Compilation failed; see 
+the compiler error output 
+for details.
+
+* Try:
+> Run with --info option 
+to get more log output.
+> Run with --scan to get 
+full insights.
+===========================
+===========================
+========================
+
+2: Task failed with an 
+exception.
+-----------
+* What went wrong:
+Execution failed for task '
+:app:compileReleaseJavaWith
+Javac'.
+> Compilation failed; see 
+the compiler error output 
+for details.
+
+* Try:
+> Run with --info option 
+to get more log output.
+> Run with --scan to get 
+full insights.
+===========================
+===========================
+========================
+
+BUILD FAILED in 5s
+61 actionable tasks: 34 executed, 27 up-to-date

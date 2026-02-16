@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_enviar_whatsapp"
+        android:title="Enviar por WhatsApp" />
+    <item
+        android:id="@+id/action_enviar_sms"
+        android:title="Enviar por SMS" />
+    <item
+        android:id="@+id/action_modificar"
+        android:title="Modificar" />
+    <item
+        android:id="@+id/action_eliminar"
+        android:title="Eliminar" />
+</menu>

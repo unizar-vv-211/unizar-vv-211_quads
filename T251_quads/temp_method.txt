@@ -1,0 +1,12 @@
+
+    
+    /**
+     * Elimina todas las Reservas de la base de datos.
+     * Útil para limpiar el sistema después de pruebas.
+     */
+    public void deleteAll() {
+        QuadRoomDatabase.databaseWriteExecutor.execute(() -> {
+            mReservaDao.deleteAll();
+        });
+    }
+}

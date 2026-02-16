@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Quads Manager</string>
+
+    <string name="hint_matricula">Matrícula (Obligatoria)</string>
+    <string name="hint_tipo">Tipo >(ej: Monoplaza, Biplaza)</string>
+    <string name="hint_precio_dia">Precio por día</string>
+    <string name="hint_descripcion">Descripción</string>
+
+    <string name="button_save">Guardar</string>
+
+    <string name="empty_not_saved">Quad no guardado porque la Matrícula está vacía.</string>
+
+    <string name="add_quad">Añadir Quad</string>
+    <string name="menu_delete">Eliminar Quad</string>
+    <string name="menu_edit">Editar Quad</string>
+
+
+
+</resources>

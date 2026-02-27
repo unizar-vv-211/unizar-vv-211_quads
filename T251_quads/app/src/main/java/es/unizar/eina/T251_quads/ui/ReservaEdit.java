@@ -3,6 +3,7 @@ package es.unizar.eina.T251_quads.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -58,6 +59,9 @@ public class ReservaEdit extends AppCompatActivity {
     /** Clave utilizada para comunicar la lista de quads seleccionados. */
     public static final String EXTRA_RESERVA_QUADS_SELECCIONADOS = "es.unizar.eina.T251_quads.RESERVA_QUADS_SELECCIONADOS";
 
+    /** Clave utilizada para comunicar el precio total calculado. */
+    public static final String EXTRA_RESERVA_PRECIO = "es.unizar.eina.T251_quads.RESERVA_PRECIO";
+
     /** Campo de texto para el nombre del cliente. */
     private EditText mEditClienteView;
     
@@ -76,6 +80,9 @@ public class ReservaEdit extends AppCompatActivity {
     /** Contenedor donde se han añadido dinámicamente los checkboxes de quads. */
     private LinearLayout mQuadsContainer;
     
+    /** TextView para mostrar el precio congelado en modo edición. */
+    private TextView mTextViewPrecioFrozen;
+
     /** Botón para guardar la reserva. */
     private Button mButtonSave;
 
@@ -122,6 +129,7 @@ public class ReservaEdit extends AppCompatActivity {
         mEditFechaDView = findViewById(R.id.edit_fecha_devolucion);
         mEditCascosView = findViewById(R.id.edit_cascos);
         mQuadsContainer = findViewById(R.id.quad_checkbox_container);
+        mTextViewPrecioFrozen = findViewById(R.id.textViewPrecioFrozen);
         mButtonSave = findViewById(R.id.button_save);
 
         androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
@@ -148,6 +156,12 @@ public class ReservaEdit extends AppCompatActivity {
             
             int cascos = intent.getIntExtra(EXTRA_RESERVA_CASCOS, 0);
             mEditCascosView.setText(String.valueOf(cascos));
+            
+            double precioCongelado = intent.getDoubleExtra(EXTRA_RESERVA_PRECIO, 0.0);
+            if (precioCongelado > 0) {
+                mTextViewPrecioFrozen.setVisibility(View.VISIBLE);
+                mTextViewPrecioFrozen.setText(String.format(java.util.Locale.getDefault(), "Precio (Actual): %.2f €", precioCongelado));
+            }
 
             if (intent.hasExtra(EXTRA_RESERVA_QUADS_SELECCIONADOS)) {
                 mQuadsSeleccionadosIniciales = intent.getStringArrayListExtra(EXTRA_RESERVA_QUADS_SELECCIONADOS);
@@ -299,12 +313,15 @@ public class ReservaEdit extends AppCompatActivity {
             return;
         }
 
+        double precioTotalCalculado = calcularPrecioTotal(fechaRBD, fechaDBD, quadsSeleccionados);
+
         // Se ha ejecutado la validación de disponibilidad en un thread en background
         final int reservaId = (mId != -1) ? mId : -1;
         final String fechaInicioFinal = fechaRBD;
         final String fechaFinFinal = fechaDBD;
         final ArrayList<String> quadsSeleccionadosFinal = new ArrayList<>(quadsSeleccionados);
         final int cascosFinal = cascos;
+        final double precioFinal = precioTotalCalculado;
         
         QuadRoomDatabase.databaseWriteExecutor.execute(() -> {
             List<String> quadsNoDisponibles = mReservaViewModel.comprobarDisponibilidad(
@@ -322,6 +339,7 @@ public class ReservaEdit extends AppCompatActivity {
                     replyIntent.putExtra(EXTRA_RESERVA_FECHA_R, fechaInicioFinal);
                     replyIntent.putExtra(EXTRA_RESERVA_FECHA_D, fechaFinFinal);
                     replyIntent.putExtra(EXTRA_RESERVA_CASCOS, cascosFinal);
+                    replyIntent.putExtra(EXTRA_RESERVA_PRECIO, precioFinal);
                     replyIntent.putExtra(EXTRA_RESERVA_QUADS_SELECCIONADOS, quadsSeleccionadosFinal);
 
                     if (mId != -1) {
@@ -357,6 +375,37 @@ public class ReservaEdit extends AppCompatActivity {
             }
         }
         return total;
+    }
+
+    /**
+     * Se ha calculado el precio total de la reserva basado en los quads y los días.
+     * 
+     * @param fechaInicio Fecha en formato YYYY-MM-DD
+     * @param fechaFin Fecha en formato YYYY-MM-DD
+     * @param matriculas Lista de quads
+     * @return El precio total calculado
+     */
+    private double calcularPrecioTotal(String fechaInicio, String fechaFin, ArrayList<String> matriculas) {
+        try {
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault());
+            java.util.Date d1 = sdf.parse(fechaInicio);
+            java.util.Date d2 = sdf.parse(fechaFin);
+            
+            long diffMillis = d2.getTime() - d1.getTime();
+            int dias = (int) Math.ceil((double) diffMillis / (1000 * 60 * 60 * 24));
+            if (dias <= 0) dias = 1;
+            
+            double sumPrecioQuads = 0;
+            for (String matricula : matriculas) {
+                Quad q = mQuadData.get(matricula);
+                if (q != null) {
+                    sumPrecioQuads += q.getPrecioDia();
+                }
+            }
+            return dias * sumPrecioQuads;
+        } catch (Exception e) {
+            return 0.0;
+        }
     }
 
     /**

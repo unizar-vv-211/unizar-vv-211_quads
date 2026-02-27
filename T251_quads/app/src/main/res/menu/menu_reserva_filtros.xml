@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_filter"
+        android:icon="@android:drawable/ic_menu_sort_by_size"
+        android:title="Filtrar"
+        app:showAsAction="ifRoom">
+        <menu>
+            <item
+                android:id="@+id/filter_todas"
+                android:title="Todas" />
+            <item
+                android:id="@+id/filter_futuras"
+                android:title="Futuras" />
+            <item
+                android:id="@+id/filter_activas"
+                android:title="Activas" />
+            <item
+                android:id="@+id/filter_pasadas"
+                android:title="Pasadas" />
+        </menu>
+    </item>
+</menu>

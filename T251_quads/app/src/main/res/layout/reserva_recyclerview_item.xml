@@ -34,4 +34,15 @@
         android:text="Quads: Z-1234, Z-5678"
         android:layout_marginTop="4dp"/>
 
+    <TextView
+        android:id="@+id/textViewPrecio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?attr/textAppearanceListItemSecondary"
+        android:textSize="14sp"
+        android:textColor="?attr/colorAccent"
+        android:textStyle="bold"
+        android:text="Precio Total: 0.00 €"
+        android:layout_marginTop="6dp"/>
+
 </LinearLayout>

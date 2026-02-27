@@ -82,6 +82,9 @@ public class ReservaListAdapter extends ListAdapter<ReservaConQuads, ReservaList
         /** TextView que muestra la lista de matrículas de quads asociados. */
         private final TextView mQuadsTextView;
         
+        /** TextView que muestra el precio total. */
+        private final TextView mPrecioTextView;
+
         /** Referencia a la reserva completa con sus quads. */
         private ReservaConQuads mReservaConQuads;
 
@@ -97,6 +100,7 @@ public class ReservaListAdapter extends ListAdapter<ReservaConQuads, ReservaList
             mClienteTextView = itemView.findViewById(R.id.textViewCliente);
             mFechasTextView = itemView.findViewById(R.id.textViewFechas);
             mQuadsTextView = itemView.findViewById(R.id.textViewQuads);
+            mPrecioTextView = itemView.findViewById(R.id.textViewPrecio);
 
             // Se ha configurado el click corto para mostrar el menú de opciones
             itemView.setOnClickListener(v -> {
@@ -128,6 +132,9 @@ public class ReservaListAdapter extends ListAdapter<ReservaConQuads, ReservaList
                         .collect(Collectors.joining(", "));
                 mQuadsTextView.setText("Quads: " + quadsStr);
             }
+            
+            String precioStr = String.format(java.util.Locale.getDefault(), "Precio Total: %.2f €", reservaConQuads.reserva.getPrecioTotal());
+            mPrecioTextView.setText(precioStr);
         }
     }
 

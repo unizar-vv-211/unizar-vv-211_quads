@@ -3,6 +3,7 @@ package es.unizar.eina.T251_quads.database;
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 /**
@@ -62,6 +63,12 @@ public class Reserva {
     private int mCascos;
 
     /**
+     * Precio total de la reserva, calculado en base al número de días y quads.
+     */
+    @ColumnInfo(name = "precio_total", defaultValue = "0.0")
+    private double mPrecioTotal;
+
+    /**
      * Constructor utilizado para crear una nueva entidad Reserva.
      * Nota: El campo mId no se incluye, ya que ha sido configurado para generarse automáticamente.
      *
@@ -70,14 +77,25 @@ public class Reserva {
      * @param fechaRecogida La fecha de inicio de la reserva (formato YYYY-MM-DD).
      * @param fechaDevolucion La fecha de finalización de la reserva (formato YYYY-MM-DD).
      * @param cascos El número de cascos solicitados.
+     * @param precioTotal El precio total de la reserva.
      */
     public Reserva(@NonNull String cliente, @NonNull String telefono,
-                   @NonNull String fechaRecogida, @NonNull String fechaDevolucion, int cascos) {
+                   @NonNull String fechaRecogida, @NonNull String fechaDevolucion, int cascos, double precioTotal) {
         this.mCliente = cliente;
         this.mTelefono = telefono;
         this.mFechaRecogida = fechaRecogida;
         this.mFechaDevolucion = fechaDevolucion;
         this.mCascos = cascos;
+        this.mPrecioTotal = precioTotal;
+    }
+
+    /**
+     * Constructor utilizado por el sistema de versión anterior sin precio total.
+     */
+    @Ignore
+    public Reserva(@NonNull String cliente, @NonNull String telefono,
+                   @NonNull String fechaRecogida, @NonNull String fechaDevolucion, int cascos) {
+        this(cliente, telefono, fechaRecogida, fechaDevolucion, cascos, 0.0);
     }
 
     /**
@@ -144,6 +162,22 @@ public class Reserva {
         this.mId = id;
     }
 
+    public void setCliente(@NonNull String cliente) {
+        this.mCliente = cliente;
+    }
+
+    public void setTelefono(@NonNull String telefono) {
+        this.mTelefono = telefono;
+    }
+
+    public void setFechaRecogida(@NonNull String fechaRecogida) {
+        this.mFechaRecogida = fechaRecogida;
+    }
+
+    public void setFechaDevolucion(@NonNull String fechaDevolucion) {
+        this.mFechaDevolucion = fechaDevolucion;
+    }
+
     /**
      * Se ha establecido el número de cascos para la reserva.
      *
@@ -151,5 +185,23 @@ public class Reserva {
      */
     public void setCascos(int cascos) {
         this.mCascos = cascos;
+    }
+
+    /**
+     * Devuelve el precio total de la reserva.
+     *
+     * @return El precio total calculado.
+     */
+    public double getPrecioTotal() {
+        return mPrecioTotal;
+    }
+
+    /**
+     * Establece el precio total de la reserva.
+     *
+     * @param precioTotal El nuevo precio total.
+     */
+    public void setPrecioTotal(double precioTotal) {
+        this.mPrecioTotal = precioTotal;
     }
 }

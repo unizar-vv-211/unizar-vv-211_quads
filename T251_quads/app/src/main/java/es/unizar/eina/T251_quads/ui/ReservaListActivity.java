@@ -141,6 +141,7 @@ public class ReservaListActivity extends AppCompatActivity {
         intent.putExtra(ReservaEdit.EXTRA_RESERVA_FECHA_R, reserva.getFechaRecogida());
         intent.putExtra(ReservaEdit.EXTRA_RESERVA_FECHA_D, reserva.getFechaDevolucion());
         intent.putExtra(ReservaEdit.EXTRA_RESERVA_CASCOS, reserva.getCascos());
+        intent.putExtra(ReservaEdit.EXTRA_RESERVA_PRECIO, reserva.getPrecioTotal());
         intent.putExtra(ReservaEdit.EXTRA_RESERVA_QUADS_SELECCIONADOS, quadIds);
 
         startActivityForResult(intent, UPDATE_RESERVA_REQUEST_CODE);
@@ -200,10 +201,11 @@ public class ReservaListActivity extends AppCompatActivity {
             String fechaR = data.getStringExtra(ReservaEdit.EXTRA_RESERVA_FECHA_R);
             String fechaD = data.getStringExtra(ReservaEdit.EXTRA_RESERVA_FECHA_D);
             int cascos = data.getIntExtra(ReservaEdit.EXTRA_RESERVA_CASCOS, 0);
+            double precio = data.getDoubleExtra(ReservaEdit.EXTRA_RESERVA_PRECIO, 0.0);
             ArrayList<String> quadIds = data.getStringArrayListExtra(ReservaEdit.EXTRA_RESERVA_QUADS_SELECCIONADOS);
 
             if (requestCode == NEW_RESERVA_REQUEST_CODE) {
-                Reserva reserva = new Reserva(cliente, telefono, fechaR, fechaD, cascos);
+                Reserva reserva = new Reserva(cliente, telefono, fechaR, fechaD, cascos, precio);
                 mReservaViewModel.insert(reserva, quadIds);
                 Toast.makeText(getApplicationContext(), "Reserva guardada", Toast.LENGTH_SHORT).show();
             } else if (requestCode == UPDATE_RESERVA_REQUEST_CODE) {
@@ -212,7 +214,7 @@ public class ReservaListActivity extends AppCompatActivity {
                     Toast.makeText(this, "Error al actualizar (ID no encontrado)", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                Reserva reserva = new Reserva(cliente, telefono, fechaR, fechaD, cascos);
+                Reserva reserva = new Reserva(cliente, telefono, fechaR, fechaD, cascos, precio);
                 reserva.setId(id);
                 mReservaViewModel.update(reserva, quadIds);
                 Toast.makeText(getApplicationContext(), "Reserva actualizada", Toast.LENGTH_SHORT).show();
@@ -231,5 +233,30 @@ public class ReservaListActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(android.view.Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_reserva_filtros, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(android.view.MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.filter_todas) {
+            mReservaViewModel.setFiltro(ReservaViewModel.FiltroReserva.TODAS);
+            return true;
+        } else if (id == R.id.filter_futuras) {
+            mReservaViewModel.setFiltro(ReservaViewModel.FiltroReserva.FUTURAS);
+            return true;
+        } else if (id == R.id.filter_activas) {
+            mReservaViewModel.setFiltro(ReservaViewModel.FiltroReserva.ACTIVAS);
+            return true;
+        } else if (id == R.id.filter_pasadas) {
+            mReservaViewModel.setFiltro(ReservaViewModel.FiltroReserva.PASADAS);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

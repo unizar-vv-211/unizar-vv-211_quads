@@ -53,6 +53,27 @@ public class ReservaRepository {
     }
 
     /**
+     * Devuelve las reservas futuras (recogida > actual).
+     */
+    public LiveData<List<ReservaConQuads>> getReservasFuturas(String fechaActual) {
+        return mReservaDao.getReservasFuturas(fechaActual);
+    }
+
+    /**
+     * Devuelve las reservas activas (actual entre recogida y devolución).
+     */
+    public LiveData<List<ReservaConQuads>> getReservasActivas(String fechaActual) {
+        return mReservaDao.getReservasActivas(fechaActual);
+    }
+
+    /**
+     * Devuelve las reservas pasadas (devolución < actual).
+     */
+    public LiveData<List<ReservaConQuads>> getReservasPasadas(String fechaActual) {
+        return mReservaDao.getReservasPasadas(fechaActual);
+    }
+
+    /**
      * Se ha insertado una nueva reserva y se ha gestionado la creación de sus relaciones M:N.
      * La operación se ha lanzado en un hilo de ejecución separado y devuelve el ID de la reserva creada.
      * Se ha utilizado un objeto Future para sincronizar y obtener el resultado de forma síncrona.

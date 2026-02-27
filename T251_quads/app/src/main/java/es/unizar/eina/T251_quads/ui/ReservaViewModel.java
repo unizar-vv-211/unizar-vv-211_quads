@@ -4,8 +4,13 @@ import android.app.Application;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Transformations;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import es.unizar.eina.T251_quads.database.Reserva;
 import es.unizar.eina.T251_quads.database.ReservaConQuads;
@@ -20,34 +25,67 @@ import es.unizar.eina.T251_quads.database.ReservaRepository;
  */
 public class ReservaViewModel extends AndroidViewModel {
 
+    /** Enum para manejar los estados del filtro. */
+    public enum FiltroReserva {
+        TODAS, FUTURAS, ACTIVAS, PASADAS
+    }
+
     /** Referencia al Repositorio de Reservas, donde se gestiona la lógica de datos. */
     private ReservaRepository mRepository;
     
+    /** Almacena el filtro seleccionado actualmente. */
+    private MutableLiveData<FiltroReserva> filtroActual = new MutableLiveData<>(FiltroReserva.TODAS);
+
     /**
      * {@code LiveData} que contiene la lista observable de todas las reservas,
      * incluyendo la lista de Quads asociados a cada una (mediante el POJO {@code ReservaConQuads}).
      */
-    private final LiveData<List<ReservaConQuads>> mAllReservasConQuads;
+    private final LiveData<List<ReservaConQuads>> mReservasResultantes;
 
     /**
      * Constructor del ViewModel.
-     * Se ha inicializado el repositorio y se ha recuperado la lista observable de reservas.
+     * Se ha inicializado el repositorio y se ha configurado el switchMap para reaccionar a los cambios de filtro.
      *
      * @param application El contexto de la aplicación.
      */
     public ReservaViewModel(Application application) {
         super(application);
         mRepository = new ReservaRepository(application);
-        mAllReservasConQuads = mRepository.getAllReservasConQuads();
+        
+        mReservasResultantes = Transformations.switchMap(filtroActual, filtro -> {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            String hoyStr = sdf.format(new Date());
+            
+            switch (filtro) {
+                case FUTURAS:
+                    return mRepository.getReservasFuturas(hoyStr);
+                case ACTIVAS:
+                    return mRepository.getReservasActivas(hoyStr);
+                case PASADAS:
+                    return mRepository.getReservasPasadas(hoyStr);
+                case TODAS:
+                default:
+                    return mRepository.getAllReservasConQuads();
+            }
+        });
     }
 
     /**
-     * Se ha recuperado la lista observable de todas las reservas con sus quads.
+     * Se ha recuperado la lista observable de las reservas filtradas con sus quads.
      *
      * @return {@code LiveData} que contiene la lista de entidades {@code ReservaConQuads}.
      */
     LiveData<List<ReservaConQuads>> getAllReservasConQuads() {
-        return mAllReservasConQuads;
+        return mReservasResultantes;
+    }
+
+    /**
+     * Cambia el filtro actual de las reservas a mostrar.
+     *
+     * @param nuevoFiltro El nuevo filtro a aplicar (TODAS, FUTURAS, ACTIVAS, PASADAS).
+     */
+    public void setFiltro(FiltroReserva nuevoFiltro) {
+        filtroActual.setValue(nuevoFiltro);
     }
 
     /**

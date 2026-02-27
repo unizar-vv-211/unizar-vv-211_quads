@@ -88,6 +88,27 @@ public interface ReservaDao {
     LiveData<List<ReservaConQuads>> getReservasConQuads();
 
     /**
+     * Obtiene las reservas futuras (fecha de recogida > hoy).
+     */
+    @Transaction
+    @Query("SELECT * FROM reserva_table WHERE fechaRecogida > :fechaActual ORDER BY fechaRecogida ASC")
+    LiveData<List<ReservaConQuads>> getReservasFuturas(String fechaActual);
+
+    /**
+     * Obtiene las reservas activas (hoy entre recogida y devolución).
+     */
+    @Transaction
+    @Query("SELECT * FROM reserva_table WHERE :fechaActual BETWEEN fechaRecogida AND fechaDevolucion ORDER BY fechaRecogida ASC")
+    LiveData<List<ReservaConQuads>> getReservasActivas(String fechaActual);
+
+    /**
+     * Obtiene las reservas pasadas (fecha de devolución < hoy).
+     */
+    @Transaction
+    @Query("SELECT * FROM reserva_table WHERE fechaDevolucion < :fechaActual ORDER BY fechaRecogida DESC")
+    LiveData<List<ReservaConQuads>> getReservasPasadas(String fechaActual);
+
+    /**
      * Se han obtenido las reservas que se solapan con un rango de fechas dado para un quad específico.
      * Esta consulta ha sido diseñada para verificar la disponibilidad de un quad antes de crear o modificar una reserva.
      * Se ha utilizado una unión (INNER JOIN) con la tabla de relación para filtrar por quad.

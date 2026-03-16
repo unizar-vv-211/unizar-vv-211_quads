@@ -65,7 +65,7 @@ public class QuadSmokeTest {
         Quad quadRecuperado = repository.getQuadByMatricula(testQuad.getMatricula());
 
         // Comprobaciones exhaustivas de los campos
-        assertEquals("El quad no coincide", testQuad, quadRecuperado);
+        assertEquals("Los quads no coinciden", testQuad, quadRecuperado);
     }
 
     // Método de finalización para limpiar la base de datos

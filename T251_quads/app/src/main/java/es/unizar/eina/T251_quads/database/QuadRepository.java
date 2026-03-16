@@ -128,4 +128,32 @@ public class QuadRepository {
             mQuadDao.deleteAll();
         });
     }
+
+    /**
+     * Devuelve el número total de quads de forma síncrona (para tests).
+     */
+    public int getNumQuads() {
+        Future<Integer> future = QuadRoomDatabase.databaseWriteExecutor.submit(
+                () -> mQuadDao.getNumQuads());
+        try {
+            return future.get(TIMEOUT, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException ex) {
+            Log.d("QuadRepository", ex.getClass().getSimpleName() + ex.getMessage());
+            return -1;
+        }
+    }
+
+    /**
+     * Recupera un quad por su matrícula de forma síncrona (para tests).
+     */
+    public Quad getQuadByMatricula(String matricula) {
+        Future<Quad> future = QuadRoomDatabase.databaseWriteExecutor.submit(
+                () -> mQuadDao.getQuadByMatricula(matricula));
+        try {
+            return future.get(TIMEOUT, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException ex) {
+            Log.d("QuadRepository", ex.getClass().getSimpleName() + ex.getMessage());
+            return null;
+        }
+    }
 }

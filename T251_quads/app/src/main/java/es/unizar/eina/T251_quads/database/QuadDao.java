@@ -75,4 +75,17 @@ public interface QuadDao {
      */
     @Query("SELECT COUNT(*) FROM relacion_reserva_quad_table WHERE quadId = :matricula")
     int countReservasForQuad(String matricula);
+
+    /**
+     * Cuenta el número total de quads en la tabla.
+     * Útil para las pruebas instrumentadas.
+     */
+    @Query("SELECT COUNT(*) FROM quads")
+    int getNumQuads();
+
+    /**
+     * Recupera un Quad específico por su matrícula de forma síncrona.
+     */
+    @Query("SELECT * FROM quads WHERE matricula = :matricula LIMIT 1")
+    Quad getQuadByMatricula(String matricula);
 }

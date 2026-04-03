@@ -5,6 +5,8 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.util.Objects;
+
 /**
  * Entidad de persistencia que representa un vehículo quad en el inventario
  */
@@ -127,5 +129,30 @@ public class Quad {
      */
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
+    }
+
+    @Override
+    public String toString() {
+        return "Quad{" +
+                "matricula='" + matricula + '\'' +
+                ", tipo='" + tipo + '\'' +
+                ", precioDia=" + precioDia +
+                ", descripcion='" + descripcion + '\'' +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Quad quad = (Quad) o;
+        return Float.compare(precioDia, quad.precioDia) == 0
+                && Objects.equals(matricula, quad.matricula)
+                && Objects.equals(tipo, quad.tipo)
+                && Objects.equals(descripcion, quad.descripcion);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(matricula, tipo, precioDia, descripcion);
     }
 }

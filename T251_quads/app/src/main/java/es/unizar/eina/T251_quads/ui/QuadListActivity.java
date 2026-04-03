@@ -18,6 +18,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import es.unizar.eina.T251_quads.database.Quad;
 import es.unizar.eina.T251_quads.R;
+import es.unizar.eina.T251_quads.database.QuadRepository;
 
 import static androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult;
 
@@ -320,5 +321,15 @@ public class QuadListActivity extends AppCompatActivity {
          * @param quad El objeto Quad construido a partir de los datos del Intent.
          */
         void process(Bundle extras, Quad quad);
+    }
+
+    /**
+     * Método específico para facilitar las pruebas instrumentadas.
+     * Permite acceder al repositorio de Quads desde el entorno de pruebas.
+     */
+    public QuadRepository getQuadRepository() {
+        // Como Room utiliza un Singleton para la BD, podemos instanciar el repositorio
+        // directamente usando el contexto de la aplicación, o sacarlo del ViewModel si lo tuvieras expuesto.
+        return new QuadRepository(getApplication());
     }
 }

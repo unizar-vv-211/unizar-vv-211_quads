@@ -10,13 +10,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import es.unizar.eina.T251_quads.database.Quad;
 import es.unizar.eina.T251_quads.database.QuadRepository;
 import es.unizar.eina.T251_quads.ui.QuadListActivity;
 
 @RunWith(AndroidJUnit4.class)
-public class QuadDeletionTest {
+public class QuadUpdateTest {
 
     @Rule
     public ActivityScenarioRule<QuadListActivity> scenarioRule =
@@ -33,21 +34,28 @@ public class QuadDeletionTest {
         Thread.sleep(300);
     }
 
+    // Prueba de actualización de precio y descripción de un quad existente
     @Test
-    public void testCPD1_DeleteValidQuad() {
-        Quad quad = new Quad("1111AAA", "Monoplaza", 50.0f, "Quad para borrar");
+    public void testUpdatePriceAndDescription() throws InterruptedException {
+        // Insertar quad inicial
+        Quad quad = new Quad("7777UPD", "Monoplaza", 40.0f, "Descripción original");
         quadRepository.insert(quad);
-        
-        int deleteResult = quadRepository.delete(quad);
-        assertEquals("Error: Debería haberse borrado una fila", 1, deleteResult);
-    }
 
-    @Test
-    public void testCPD2_DeleteNonExistentQuad() {
-        Quad quadInexistente = new Quad("9999ZZZ", "Monoplaza", 50.0f, "No existe");
-        
-        int deleteResult = quadRepository.delete(quadInexistente);
-        assertEquals("Error: Debería devolver 0 filas afectadas", 0, deleteResult);
+        // Modificar campos en memoria
+        quad.setPrecioDia(99.99f);
+        quad.setDescripcion("Descripción actualizada");
+
+        // Ejecutar actualización
+        quadRepository.update(quad);
+        Thread.sleep(500);
+
+        // Recuperar el quad y verificar los cambios
+        Quad quadRecuperado = quadRepository.getQuadByMatricula("7777UPD");
+        assertNotNull("El quad no fue encontrado tras la actualización", quadRecuperado);
+        assertEquals("El precio no se actualizó correctamente",
+                99.99f, quadRecuperado.getPrecioDia(), 0.01f);
+        assertEquals("La descripción no se actualizó correctamente",
+                "Descripción actualizada", quadRecuperado.getDescripcion());
     }
 
     @After

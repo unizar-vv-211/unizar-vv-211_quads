@@ -11,7 +11,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,6 +23,7 @@ import es.unizar.eina.T251_quads.database.Quad;
 import es.unizar.eina.T251_quads.database.QuadRepository;
 import es.unizar.eina.T251_quads.database.Reserva;
 import es.unizar.eina.T251_quads.database.ReservaRepository;
+import es.unizar.eina.T251_quads.database.UnitTests;
 import es.unizar.eina.T251_quads.ui.QuadListActivity;
 
 @RunWith(AndroidJUnit4.class)
@@ -82,6 +85,39 @@ public class ReservaCreationTest {
                 resultado.get() == null || resultado.get().isEmpty());
         assertTrue("La matrícula base debería aparecer como no disponible",
                 resultado.get().contains("BASECR01"));
+    }
+
+    // Prueba de particiones de equivalencia para el nombre del cliente (PE-01 a PE-05)
+    @Test
+    public void testClienteValidationPartitions() {
+        UnitTests helper = new UnitTests(quadRepository, reservaRepository);
+
+        // PE-01: Válida
+        String pe01 = "Juan Pérez";
+        assertTrue("PE-01 debería ser válido", helper.validateCliente(pe01));
+        assertEquals("PE-01 debería devolver Registro exitoso", "Registro exitoso.", helper.getClienteValidationError(pe01));
+
+        // PE-02: Dígitos
+        String pe02 = "Ana89";
+        assertFalse("PE-02 debería ser inválido", helper.validateCliente(pe02));
+        assertEquals("PE-02 debería devolver Formato no permitido", "Error: Formato no permitido.", helper.getClienteValidationError(pe02));
+
+        // PE-03: Especiales
+        String pe03 = "L@ura!";
+        assertFalse("PE-03 debería ser inválido", helper.validateCliente(pe03));
+        assertEquals("PE-03 debería devolver Formato no permitido", "Error: Formato no permitido.", helper.getClienteValidationError(pe03));
+
+        // PE-04: Vacía
+        String pe04 = "";
+        assertFalse("PE-04 debería ser inválido", helper.validateCliente(pe04));
+        assertEquals("PE-04 debería devolver Campo obligatorio", "Error: Campo obligatorio.", helper.getClienteValidationError(pe04));
+
+        // PE-05: Longitud
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 256; i++) sb.append("A");
+        String pe05 = sb.toString();
+        assertFalse("PE-05 debería ser inválido", helper.validateCliente(pe05));
+        assertEquals("PE-05 debería devolver Longitud excedida", "Error: Longitud excedida.", helper.getClienteValidationError(pe05));
     }
 
     @After

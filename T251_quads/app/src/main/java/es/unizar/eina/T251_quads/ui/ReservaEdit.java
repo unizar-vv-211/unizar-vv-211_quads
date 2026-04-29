@@ -110,6 +110,9 @@ public class ReservaEdit extends AppCompatActivity {
     /** Patrón utilizado para validar el formato de fecha DD-MM-YYYY. */
     private static final Pattern FECHA_PATTERN = Pattern.compile("^\\d{2}-\\d{2}-\\d{4}$");
 
+    /** Patrón para validar el nombre del cliente (solo letras y espacios). */
+    private static final Pattern CLIENTE_PATTERN = Pattern.compile("^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$");
+
     /**
      * Se ha inicializado la pantalla de creación/edición de reservas.
      * Se han recuperado las referencias a las vistas, se han inicializado los ViewModels,
@@ -237,7 +240,25 @@ public class ReservaEdit extends AppCompatActivity {
         String fechaD = mEditFechaDView.getText().toString();
         String cascosStr = mEditCascosView.getText().toString();
 
-        if (TextUtils.isEmpty(cliente) || TextUtils.isEmpty(telefono) ||
+        if (TextUtils.isEmpty(cliente)) {
+            Toast.makeText(this, "Error: Campo obligatorio.", Toast.LENGTH_SHORT).show();
+            setResult(RESULT_CANCELED, replyIntent);
+            return;
+        }
+
+        if (cliente.length() > 255) {
+            Toast.makeText(this, "Error: Longitud excedida.", Toast.LENGTH_SHORT).show();
+            setResult(RESULT_CANCELED, replyIntent);
+            return;
+        }
+
+        if (!CLIENTE_PATTERN.matcher(cliente).matches()) {
+            Toast.makeText(this, "Error: Formato no permitido.", Toast.LENGTH_SHORT).show();
+            setResult(RESULT_CANCELED, replyIntent);
+            return;
+        }
+
+        if (TextUtils.isEmpty(telefono) ||
                 TextUtils.isEmpty(fechaR) || TextUtils.isEmpty(fechaD) || TextUtils.isEmpty(cascosStr)) {
             Toast.makeText(this, "Rellene todos los campos", Toast.LENGTH_SHORT).show();
             setResult(RESULT_CANCELED, replyIntent);
@@ -347,6 +368,7 @@ public class ReservaEdit extends AppCompatActivity {
                     }
 
                     setResult(RESULT_OK, replyIntent);
+                    Toast.makeText(this, "Registro exitoso.", Toast.LENGTH_SHORT).show();
                     finish();
                 }
             });

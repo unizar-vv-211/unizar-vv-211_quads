@@ -37,19 +37,16 @@ public class UnitTests {
      * Los resultados se muestran en el log con el tag "Pruebas".
      */
     public void runAllTests() {
-        Log.d(TAG, "========================================");
-        Log.d(TAG, "INICIANDO BATERÍA DE PRUEBAS");
-        Log.d(TAG, "========================================");
+        Log.d(TAG, "INICIANDO PRUEBAS");
         
         testQuadInsert();
         testQuadDelete();
         testReservaInsert();
+        testValidateClientePartitioning();
         testVolumen();
         testSobrecarga();
         
-        Log.d(TAG, "========================================");
         Log.d(TAG, "PRUEBAS FINALIZADAS");
-        Log.d(TAG, "========================================");
     }
     
     /**
@@ -623,7 +620,7 @@ public class UnitTests {
      * Valida todos los campos de una Reserva según las reglas de negocio.
      */
     private boolean validarReserva(String cliente, String telefono, String fechaInicio, String fechaFin) {
-        return validarCliente(cliente) && 
+        return validateCliente(cliente) && 
                validarTelefono(telefono) && 
                validarFechas(fechaInicio, fechaFin);
     }
@@ -631,8 +628,61 @@ public class UnitTests {
     /**
      * Valida que el cliente no sea null ni vacío.
      */
-    private boolean validarCliente(String cliente) {
-        return cliente != null && !cliente.trim().isEmpty();
+    public boolean validateCliente(String cliente) {
+        if (cliente == null || cliente.trim().isEmpty()) {
+            return false;
+        }
+        if (cliente.length() > 255) {
+            return false;
+        }
+        // Solo caracteres alfabéticos y espacios
+        return cliente.matches("^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$");
+    }
+
+    /**
+     * Devuelve el mensaje de error específico para la validación del cliente.
+     * Útil para mostrar Toasts precisos o para logs de pruebas.
+     */
+    public String getClienteValidationError(String cliente) {
+        if (cliente == null || cliente.trim().isEmpty()) {
+            return "Error: Campo obligatorio.";
+        }
+        if (cliente.length() > 255) {
+            return "Error: Longitud excedida.";
+        }
+        if (!cliente.matches("^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$")) {
+            return "Error: Formato no permitido.";
+        }
+        return "Registro exitoso.";
+    }
+
+    /**
+     * Prueba las particiones de equivalencia para la validación del cliente (PE-01 a PE-05).
+     */
+    private void testValidateClientePartitioning() {
+        Log.d(TAG, "\n--- PRUEBAS DE PARTICIONES DE EQUIVALENCIA: validarCliente ---");
+
+        // PE-01: Válida - Cadenas con caracteres alfabéticos y espacios
+        String pe01 = "Juan Pérez";
+        log("PE-01", validateCliente(pe01), "Válida: '" + pe01 + "' -> " + getClienteValidationError(pe01));
+
+        // PE-02: Inválida - Cadenas que contienen dígitos numéricos
+        String pe02 = "Ana89";
+        log("PE-02", !validateCliente(pe02), "Inválida (Dígitos): '" + pe02 + "' -> " + getClienteValidationError(pe02));
+
+        // PE-03: Inválida - Cadenas con caracteres especiales o símbolos
+        String pe03 = "L@ura!";
+        log("PE-03", !validateCliente(pe03), "Inválida (Especiales): '" + pe03 + "' -> " + getClienteValidationError(pe03));
+
+        // PE-04: Inválida - Cadena vacía o compuesta solo por espacios
+        String pe04 = "";
+        log("PE-04", !validateCliente(pe04), "Inválida (Vacía): '" + pe04 + "' -> " + getClienteValidationError(pe04));
+
+        // PE-05: Inválida - Cadena con longitud excesiva (>255)
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 256; i++) sb.append("A");
+        String pe05 = sb.toString();
+        log("PE-05", !validateCliente(pe05), "Inválida (Longitud): 'Texto > 255 chars' -> " + getClienteValidationError(pe05));
     }
     
     /**

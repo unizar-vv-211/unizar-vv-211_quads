@@ -7,7 +7,7 @@ import androidx.cardview.widget.CardView;
 
 import es.unizar.eina.T251_quads.ui.QuadListActivity;
 import es.unizar.eina.T251_quads.ui.ReservaListActivity;
-import es.unizar.eina.T251_quads.ui.TestActivity;
+
 
 /**
  * Activity principal de la aplicación que sirve como pantalla de entrada.
@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
         CardView cardQuads = findViewById(R.id.card_quads);
         CardView cardReservas = findViewById(R.id.card_reservas);
-        CardView cardTests = findViewById(R.id.card_tests);
+
 
         cardQuads.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, QuadListActivity.class);
@@ -43,9 +43,6 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
         
-        cardTests.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, TestActivity.class);
-            startActivity(intent);
-        });
+
     }
 }

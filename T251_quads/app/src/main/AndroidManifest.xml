@@ -44,11 +44,7 @@
             android:name=".ui.QuadListActivity"
             android:exported="false" />
             
-        <!-- Activity para ejecutar pruebas unitarias -->
-        <activity
-            android:name=".ui.TestActivity"
-            android:exported="false"
-            android:label="Pruebas" />
+
     </application>
 
 </manifest>

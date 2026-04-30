@@ -154,6 +154,9 @@ public class QuadListAdapter extends ListAdapter<Quad, QuadListAdapter.QuadViewH
         
         /** TextView que muestra la matrícula del quad. */
         private final TextView quadItemView;
+        
+        /** TextView que muestra el tipo de quad. */
+        private final TextView tipoItemView;
 
         /**
          * Constructor del ViewHolder.
@@ -164,6 +167,7 @@ public class QuadListAdapter extends ListAdapter<Quad, QuadListAdapter.QuadViewH
         private QuadViewHolder(View itemView) {
             super(itemView);
             quadItemView = itemView.findViewById(R.id.textViewMatricula);
+            tipoItemView = itemView.findViewById(R.id.textViewTipo);
         }
 
         /**
@@ -173,6 +177,9 @@ public class QuadListAdapter extends ListAdapter<Quad, QuadListAdapter.QuadViewH
                         OnItemLongClickListener longClickListener, 
                         boolean selectionMode, boolean isSelected) {
             quadItemView.setText(quad.getMatricula());
+            if (tipoItemView != null) {
+                tipoItemView.setText("TIPO: " + quad.getTipo());
+            }
             
             // Cambiar color de fondo si está seleccionado
             if (isSelected) {

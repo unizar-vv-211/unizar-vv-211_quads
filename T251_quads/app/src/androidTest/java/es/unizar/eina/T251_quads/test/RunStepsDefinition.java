@@ -72,8 +72,10 @@ public class RunStepsDefinition {
     /**
      * Espera a que un elemento con el texto dado aparezca en el RecyclerView,
      * haciendo reintentos durante hasta {@code timeoutMs} milisegundos.
-     * Usa RecyclerViewActions.scrollTo() para forzar el scroll si el item no es visible.
-     * Esto reemplaza el antipatrón de Thread.sleep() y no requiere IdlingResources externos.
+     * Usa RecyclerViewActions.scrollTo() para forzar el scroll si el item no es
+     * visible.
+     * Esto reemplaza el antipatrón de Thread.sleep() y no requiere IdlingResources
+     * externos.
      */
     private void waitForRecyclerViewItem(int recyclerViewId, String text, long timeoutMs) {
         long deadline = System.currentTimeMillis() + timeoutMs;
@@ -98,16 +100,14 @@ public class RunStepsDefinition {
     @Before
     public void setup() {
         // 1. Limpiar la BD ANTES de lanzar la Activity para evitar estado residual.
-        //    La limpieza se hace en un BG thread para no bloquear el Main Thread.
+        // La limpieza se hace en un BG thread para no bloquear el Main Thread.
         Context context = ApplicationProvider.getApplicationContext();
 
         runOnBackgroundAndWait(() -> {
-            es.unizar.eina.T251_quads.database.ReservaRepository reservaRepo =
-                    new es.unizar.eina.T251_quads.database.ReservaRepository(
-                            (android.app.Application) context);
-            es.unizar.eina.T251_quads.database.QuadRepository quadRepo =
-                    new es.unizar.eina.T251_quads.database.QuadRepository(
-                            (android.app.Application) context);
+            es.unizar.eina.T251_quads.database.ReservaRepository reservaRepo = new es.unizar.eina.T251_quads.database.ReservaRepository(
+                    (android.app.Application) context);
+            es.unizar.eina.T251_quads.database.QuadRepository quadRepo = new es.unizar.eina.T251_quads.database.QuadRepository(
+                    (android.app.Application) context);
             reservaRepo.deleteAll();
             quadRepo.deleteAll();
         });
@@ -135,23 +135,23 @@ public class RunStepsDefinition {
     }
 
     /**
-     * Inserta un Quad directamente en la BD ejecutando la operación en un hilo secundario.
-     * Esto evita el deadlock que ocurría al llamar a future.get() desde el Main Thread
+     * Inserta un Quad directamente en la BD ejecutando la operación en un hilo
+     * secundario.
+     * Esto evita el deadlock que ocurría al llamar a future.get() desde el Main
+     * Thread
      * (hilo en el que Cucumber ejecuta los steps).
      */
     @Given("Existe un quad con matricula {string} y precio {string}")
     public void existe_un_quad_con_matricula_y_precio(String matricula, String precio) {
         Context context = ApplicationProvider.getApplicationContext();
-        es.unizar.eina.T251_quads.database.QuadRepository repository =
-                new es.unizar.eina.T251_quads.database.QuadRepository(
-                        (android.app.Application) context);
+        es.unizar.eina.T251_quads.database.QuadRepository repository = new es.unizar.eina.T251_quads.database.QuadRepository(
+                (android.app.Application) context);
 
-        es.unizar.eina.T251_quads.database.Quad nuevoQuad =
-                new es.unizar.eina.T251_quads.database.Quad(
-                        matricula,
-                        "Monoplaza",
-                        Float.parseFloat(precio),
-                        "Quad de prueba Cucumber");
+        es.unizar.eina.T251_quads.database.Quad nuevoQuad = new es.unizar.eina.T251_quads.database.Quad(
+                matricula,
+                "Monoplaza",
+                Float.parseFloat(precio),
+                "Quad de prueba Cucumber");
 
         // Ejecutar en BG thread para que future.get() no bloquee el Main Thread.
         runOnBackgroundAndWait(() -> repository.insert(nuevoQuad));
@@ -165,19 +165,17 @@ public class RunStepsDefinition {
     @Given("Existe una reserva para {string} vinculada al quad {string}")
     public void existe_una_reserva_para_vinculada_al_quad(String cliente, String matricula) {
         Context context = ApplicationProvider.getApplicationContext();
-        es.unizar.eina.T251_quads.database.ReservaRepository repository =
-                new es.unizar.eina.T251_quads.database.ReservaRepository(
-                        (android.app.Application) context);
+        es.unizar.eina.T251_quads.database.ReservaRepository repository = new es.unizar.eina.T251_quads.database.ReservaRepository(
+                (android.app.Application) context);
 
         // 2 días a 50€/día = 100.0€ (precio congelado en el momento de la reserva)
-        es.unizar.eina.T251_quads.database.Reserva nuevaReserva =
-                new es.unizar.eina.T251_quads.database.Reserva(
-                        cliente,
-                        "600111222",
-                        "10-05-2026",
-                        "12-05-2026",
-                        0,
-                        100.0);
+        es.unizar.eina.T251_quads.database.Reserva nuevaReserva = new es.unizar.eina.T251_quads.database.Reserva(
+                cliente,
+                "600111222",
+                "10-05-2026",
+                "12-05-2026",
+                0,
+                100.0);
 
         java.util.List<String> quads = new java.util.ArrayList<>();
         quads.add(matricula);
@@ -327,21 +325,25 @@ public class RunStepsDefinition {
     }
 
     /**
-     * Navega dentro del RecyclerView de reservas hasta el item del cliente especificado
+     * Navega dentro del RecyclerView de reservas hasta el item del cliente
+     * especificado
      * y hace click sobre él para abrir el PopupMenu (o la pantalla de detalle).
      *
      * Usa RecyclerViewActions.scrollTo() con hasDescendant() como matcher robusto:
      * - scrollTo() garantiza que el item esté visible antes de interactuar.
-     * - hasDescendant(withText(...)) busca dentro de la estructura de vistas del item,
-     *   evitando ambigüedades con otros textos de la pantalla.
+     * - hasDescendant(withText(...)) busca dentro de la estructura de vistas del
+     * item,
+     * evitando ambigüedades con otros textos de la pantalla.
      * - waitForRecyclerViewItem() hace reintentos mientras Room y DiffUtil terminan
-     *   de entregar los datos al adaptador (reemplaza Thread.sleep() y es más fiable).
+     * de entregar los datos al adaptador (reemplaza Thread.sleep() y es más
+     * fiable).
      */
     @When("Visualizo la reserva de {string}")
     public void visualizo_la_reserva_de(String cliente) {
         this.lastClienteVisualizado = cliente;
-        
-        // Esperar a que LiveData entregue los datos y DiffUtil actualice el RecyclerView.
+
+        // Esperar a que LiveData entregue los datos y DiffUtil actualice el
+        // RecyclerView.
         waitForRecyclerViewItem(R.id.recyclerview, cliente, 5000);
 
         // Scroll al item del cliente para asegurar que está en pantalla.
@@ -353,20 +355,24 @@ public class RunStepsDefinition {
     }
 
     /**
-     * Verifica que el precio total mostrado en el PopupMenu o en la vista de detalle
+     * Verifica que el precio total mostrado en el PopupMenu o en la vista de
+     * detalle
      * de la reserva coincide con el precio congelado en el momento de la creación.
      *
      * El precio se formatea en ReservaListAdapter como:
-     *   "Precio Total: %.2f €"  (con Locale.getDefault())
+     * "Precio Total: %.2f €" (con Locale.getDefault())
      * En locale español, 100.0 → "Precio Total: 100,00 €"
      *
-     * Usamos containsString("100") para ser agnósticos al separador decimal del locale.
-     * El verificador busca el textViewPrecio dentro del item del RecyclerView que aún
+     * Usamos containsString("100") para ser agnósticos al separador decimal del
+     * locale.
+     * El verificador busca el textViewPrecio dentro del item del RecyclerView que
+     * aún
      * está visible (o en el PopupMenu si la Activity lo muestra así).
      */
     @Then("El precio de la reserva deberia ser {string}")
     public void el_precio_de_la_reserva_deberia_ser(String precioEsperado) {
-        // Extraer la parte numérica sin separadores de locale para hacer la comparación robusta.
+        // Extraer la parte numérica sin separadores de locale para hacer la comparación
+        // robusta.
         // "100.0" → buscamos "100" (presente tanto en "100.00" como en "100,00")
         String valorNumerico = precioEsperado.contains(".")
                 ? precioEsperado.substring(0, precioEsperado.indexOf('.'))
@@ -374,16 +380,14 @@ public class RunStepsDefinition {
 
         // El adaptador muestra el precio en textViewPrecio dentro de cada item.
         // Verificamos que el RecyclerView contiene un item (descendiente común)
-        // que tiene tanto el texto del cliente como el textViewPrecio con el valor esperado.
+        // que tiene tanto el texto del cliente como el textViewPrecio con el valor
+        // esperado.
         onView(withId(R.id.recyclerview))
                 .check(matches(hasDescendant(
                         allOf(
                                 hasDescendant(withText(containsString(lastClienteVisualizado))),
                                 hasDescendant(allOf(
                                         withId(R.id.textViewPrecio),
-                                        withText(containsString(valorNumerico))
-                                ))
-                        )
-                )));
+                                        withText(containsString(valorNumerico))))))));
     }
 }

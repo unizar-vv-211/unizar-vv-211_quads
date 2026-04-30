@@ -124,9 +124,14 @@ public class QuadRepository {
      * Útil para limpiar el sistema después de pruebas.
      */
     public void deleteAll() {
-        QuadRoomDatabase.databaseWriteExecutor.execute(() -> {
+        Future<?> future = QuadRoomDatabase.databaseWriteExecutor.submit(() -> {
             mQuadDao.deleteAll();
         });
+        try {
+            future.get(TIMEOUT, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException ex) {
+            Log.d("QuadRepository", ex.getClass().getSimpleName() + ex.getMessage());
+        }
     }
 
     /**

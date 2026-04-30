@@ -194,8 +194,13 @@ public class ReservaRepository {
      * Útil para limpiar el sistema después de pruebas.
      */
     public void deleteAll() {
-        QuadRoomDatabase.databaseWriteExecutor.execute(() -> {
+        Future<?> future = QuadRoomDatabase.databaseWriteExecutor.submit(() -> {
             mReservaDao.deleteAll();
         });
+        try {
+            future.get(TIMEOUT, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException ex) {
+            Log.d("ReservaRepository", ex.getClass().getSimpleName() + ex.getMessage());
+        }
     }
 }

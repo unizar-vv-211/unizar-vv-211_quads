@@ -75,6 +75,12 @@ public class QuadEdit extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quadedit);
 
+        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
         mEditMatriculaView = findViewById(R.id.edit_matricula);
         mSpinnerTipoView = findViewById(R.id.spinner_tipo);
         mEditPrecioView = findViewById(R.id.edit_precio_dia);

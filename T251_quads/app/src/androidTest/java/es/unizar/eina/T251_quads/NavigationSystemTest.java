@@ -6,9 +6,12 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -17,71 +20,67 @@ import org.junit.runner.RunWith;
 @RunWith(AndroidJUnit4.class)
 public class NavigationSystemTest {
 
+    // Iniciamos la prueba en el nodo N1 (MainActivity)
     @Rule
     public ActivityScenarioRule<MainActivity> scenarioRule =
             new ActivityScenarioRule<>(MainActivity.class);
 
-    // Camino A: MainActivity -> QuadListActivity -> QuadEdit
     @Test
-    public void testCaminoProfundidad2_CrearQuad() {
-        // Profundidad 1
-        onView(withId(R.id.card_quads)).perform(click());
-        // Verificación exhaustiva del Nivel 1
-        onView(withId(R.id.recyclerview)).check(matches(isDisplayed()));
-        onView(withId(R.id.fab)).check(matches(isDisplayed()));
+    public void testCaminoProfundidad2_FlujoCompletoQuads() {
+        String matriculaTest = "NAV1234";
 
-        // Profundidad 2
+        // -------------------------------------------------------------
+        // ARCO 1: Ir a la lista de Quads (N1 -> N2)
+        onView(withId(R.id.card_quads)).perform(click());
+        onView(withId(R.id.recyclerview)).check(matches(isDisplayed()));
+
+        // -------------------------------------------------------------
+        // ARCO 2: Crear un nuevo Quad (N2 -> N3)
+        // Cubre la situación de prueba 1-2
         onView(withId(R.id.fab)).perform(click());
-        // Verificación exhaustiva del Nivel 2 (Pantalla QuadEdit completa)
         onView(withId(R.id.edit_matricula)).check(matches(isDisplayed()));
-        onView(withId(R.id.spinner_tipo)).check(matches(isDisplayed()));
-        onView(withId(R.id.edit_precio_dia)).check(matches(isDisplayed()));
-        onView(withId(R.id.button_save)).check(matches(isDisplayed()));
-    }
 
-    // Camino B: MainActivity -> QuadListActivity -> MainActivity
-    @Test
-    public void testCaminoProfundidad2_RetornoDesdeQuads() {
-        // Profundidad 1
-        onView(withId(R.id.card_quads)).perform(click());
+        // Rellenamos el formulario (usando replaceText como en Notepad)
+        onView(withId(R.id.edit_matricula)).perform(replaceText(matriculaTest), closeSoftKeyboard());
+        onView(withId(R.id.edit_precio_dia)).perform(replaceText("50.0"), closeSoftKeyboard());
+        onView(withId(R.id.edit_descripcion)).perform(replaceText("Quad para test de navegacion"), closeSoftKeyboard());
+
+        // -------------------------------------------------------------
+        // ARCO 3: Guardar el Quad (N3 -> N2)
+        // Cubre la situación de prueba 2-3
+        onView(withId(R.id.button_save)).perform(click());
         onView(withId(R.id.recyclerview)).check(matches(isDisplayed()));
 
-        // Profundidad 2
+        // -------------------------------------------------------------
+        // ARCO 4: Editar el Quad creado (N2 -> N3)
+        // Cubre la situación de prueba 3-4
+        // Click en el item para sacar el PopupMenu, luego click en "Editar"
+        onView(withText(matriculaTest)).perform(click());
+        onView(withText("Editar")).perform(click());
+        onView(withId(R.id.edit_descripcion)).check(matches(isDisplayed()));
+
+        // Modificamos algo leve
+        onView(withId(R.id.edit_descripcion)).perform(replaceText("Descripcion modificada"), closeSoftKeyboard());
+
+        // -------------------------------------------------------------
+        // ARCO 5: Cancelar/Atrás desde la edición (N3 -> N2)
+        // Cubre la situación de prueba 4-5
         pressBack();
-        // Verificación exhaustiva del Nivel 2 (Retorno al nodo raíz)
-        onView(withId(R.id.card_quads)).check(matches(isDisplayed()));
-        onView(withId(R.id.card_reservas)).check(matches(isDisplayed()));
-    }
-
-    // Camino C: MainActivity -> ReservaListActivity -> ReservaEdit
-    @Test
-    public void testCaminoProfundidad2_CrearReserva() {
-        // Profundidad 1
-        onView(withId(R.id.card_reservas)).perform(click());
-        // Verificación exhaustiva del Nivel 1
-        onView(withId(R.id.recyclerview)).check(matches(isDisplayed()));
-        onView(withId(R.id.fab)).check(matches(isDisplayed()));
-
-        // Profundidad 2
-        onView(withId(R.id.fab)).perform(click());
-        // Verificación exhaustiva del Nivel 2 (Pantalla ReservaEdit completa)
-        onView(withId(R.id.edit_cliente)).check(matches(isDisplayed()));
-        onView(withId(R.id.edit_fecha_recogida)).check(matches(isDisplayed()));
-        onView(withId(R.id.edit_fecha_devolucion)).check(matches(isDisplayed()));
-        onView(withId(R.id.button_save)).check(matches(isDisplayed()));
-    }
-
-    // Camino D: MainActivity -> ReservaListActivity -> MainActivity
-    @Test
-    public void testCaminoProfundidad2_RetornoDesdeReservas() {
-        // Profundidad 1
-        onView(withId(R.id.card_reservas)).perform(click());
         onView(withId(R.id.recyclerview)).check(matches(isDisplayed()));
 
-        // Profundidad 2
+        // -------------------------------------------------------------
+        // ARCO 6: Eliminar el Quad (N2 -> N2)
+        // Cubre la situación de prueba 5-6
+        // Click en el item para sacar el PopupMenu, luego click en "Eliminar"
+        onView(withText(matriculaTest)).perform(click());
+        onView(withText("Eliminar")).perform(click());
+
+        // -------------------------------------------------------------
+        // ARCO 7: Volver a la pantalla principal (N2 -> N1)
+        // Cubre la situación de prueba 6-7
         pressBack();
-        // Verificación exhaustiva del Nivel 2 (Retorno al nodo raíz)
+
+        // Verificación final de que estamos en N1
         onView(withId(R.id.card_quads)).check(matches(isDisplayed()));
-        onView(withId(R.id.card_reservas)).check(matches(isDisplayed()));
     }
 }

@@ -7,14 +7,14 @@ android {
     compileSdk 34
 
     defaultConfig {
-        applicationId "es.unizar.eina.notepad"
+        applicationId "es.unizar.eina.T251_quads"
         minSdk 24
         targetSdk 34
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        // testInstrumentationRunner "io.cucumber.android.runner.CucumberAndroidJUnitRunner"
+        //testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "io.cucumber.android.runner.CucumberAndroidJUnitRunner"
     }
 
     buildTypes {
@@ -67,6 +67,7 @@ dependencies {
     })
     androidTestImplementation "androidx.test.ext:junit:$rootProject.androidxJunitVersion"
     // Añadido para pruebas de cumcumber
+    androidTestImplementation 'androidx.test:rules:1.6.1'
     androidTestImplementation 'io.cucumber:cucumber-android:7.14.0'
     androidTestImplementation 'io.cucumber:cucumber-picocontainer:7.17.0'
 }

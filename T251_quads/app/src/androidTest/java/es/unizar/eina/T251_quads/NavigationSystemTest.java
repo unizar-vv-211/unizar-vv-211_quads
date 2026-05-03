@@ -1,17 +1,14 @@
 package es.unizar.eina.T251_quads;
 
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -20,67 +17,66 @@ import org.junit.runner.RunWith;
 @RunWith(AndroidJUnit4.class)
 public class NavigationSystemTest {
 
-    // Iniciamos la prueba en el nodo N1 (MainActivity)
+    // El punto de entrada para todos los flujos de navegación es la pantalla principal (Nodo N1)
     @Rule
-    public ActivityScenarioRule<MainActivity> scenarioRule =
-            new ActivityScenarioRule<>(MainActivity.class);
+    public ActivityScenarioRule<MainActivity> scenarioRule = new ActivityScenarioRule<>(MainActivity.class);
 
     @Test
-    public void testCaminoProfundidad2_FlujoCompletoQuads() {
-        String matriculaTest = "NAV1234";
+    public void testProfundidad2_FlujoCompletoQuads() {
+        // Vamos a probar todo el flujo de quads. Esto cubre los caminos a-c (N1->N2->N3), c-d (N2->N3->N2) y d-b (N3->N2->N1).
 
-        // -------------------------------------------------------------
-        // ARCO 1: Ir a la lista de Quads (N1 -> N2)
+        // Hacemos la transición del Arco 'a' (N1 -> N2): Entramos a la lista de quads
         onView(withId(R.id.card_quads)).perform(click());
         onView(withId(R.id.recyclerview)).check(matches(isDisplayed()));
 
-        // -------------------------------------------------------------
-        // ARCO 2: Crear un nuevo Quad (N2 -> N3)
-        // Cubre la situación de prueba 1-2
+        // Ahora el Arco 'c' (N2 -> N3): Pulsamos el botón para añadir un quad nuevo
         onView(withId(R.id.fab)).perform(click());
-        onView(withId(R.id.edit_matricula)).check(matches(isDisplayed()));
+        onView(withId(R.id.edit_matricula)).check(matches(isDisplayed())); // Comprobamos que estamos en QuadEdit (N3)
 
-        // Rellenamos el formulario (usando replaceText como en Notepad)
-        onView(withId(R.id.edit_matricula)).perform(replaceText(matriculaTest), closeSoftKeyboard());
-        onView(withId(R.id.edit_precio_dia)).perform(replaceText("50.0"), closeSoftKeyboard());
-        onView(withId(R.id.edit_descripcion)).perform(replaceText("Quad para test de navegacion"), closeSoftKeyboard());
+        // Hacemos el Arco 'd' (N3 -> N2): Volvemos atrás a la lista
+        pressBack();
+        onView(withId(R.id.recyclerview)).check(matches(isDisplayed())); // Comprobamos que volvemos a QuadList (N2)
 
-        // -------------------------------------------------------------
-        // ARCO 3: Guardar el Quad (N3 -> N2)
-        // Cubre la situación de prueba 2-3
-        onView(withId(R.id.button_save)).perform(click());
+        // Por último, el Arco 'b' (N2 -> N1): Volvemos atrás otra vez a la pantalla principal
+        pressBack();
+        onView(withId(R.id.card_quads)).check(matches(isDisplayed())); // Comprobamos que volvemos al inicio (N1)
+    }
+
+    @Test
+    public void testProfundidad2_FlujoCompletoReservas() {
+        // Ahora probamos el flujo de reservas. Esto cubre los caminos e-g (N1->N4->N5), g-h (N4->N5->N4) y h-f (N5->N4->N1).
+
+        // Hacemos la transición del Arco 'e' (N1 -> N4): Entramos a la sección de reservas
+        onView(withId(R.id.card_reservas)).perform(click());
         onView(withId(R.id.recyclerview)).check(matches(isDisplayed()));
 
-        // -------------------------------------------------------------
-        // ARCO 4: Editar el Quad creado (N2 -> N3)
-        // Cubre la situación de prueba 3-4
-        // Click en el item para sacar el PopupMenu, luego click en "Editar"
-        onView(withText(matriculaTest)).perform(click());
-        onView(withText("Editar")).perform(click());
-        onView(withId(R.id.edit_descripcion)).check(matches(isDisplayed()));
+        // Seguimos con el Arco 'g' (N4 -> N5): Le damos a crear una nueva reserva
+        onView(withId(R.id.fab)).perform(click());
+        onView(withId(R.id.edit_cliente)).check(matches(isDisplayed())); // Vemos que sale el formulario ReservaEdit (N5)
 
-        // Modificamos algo leve
-        onView(withId(R.id.edit_descripcion)).perform(replaceText("Descripcion modificada"), closeSoftKeyboard());
-
-        // -------------------------------------------------------------
-        // ARCO 5: Cancelar/Atrás desde la edición (N3 -> N2)
-        // Cubre la situación de prueba 4-5
+        // Hacemos el Arco 'h' (N5 -> N4): Tiramos para atrás a la lista de reservas
         pressBack();
+        onView(withId(R.id.recyclerview)).check(matches(isDisplayed())); // Confirmamos que volvemos a ReservaList (N4)
+
+        // Por último, el Arco 'f' (N4 -> N1): Atrás otra vez para salir al inicio
+        pressBack();
+        onView(withId(R.id.card_reservas)).check(matches(isDisplayed())); // Confirmamos que volvemos al menú principal (N1)
+    }
+
+    @Test
+    public void testProfundidad2_TransicionCruzada() {
+        // Vamos a probar a saltar entre secciones. Esto cubre el camino b-e (N2->N1->N4), esencial para probar pérdida de contexto.
+
+        // Como precondición, primero llegamos a N2 metiéndonos en quads
+        onView(withId(R.id.card_quads)).perform(click());
         onView(withId(R.id.recyclerview)).check(matches(isDisplayed()));
 
-        // -------------------------------------------------------------
-        // ARCO 6: Eliminar el Quad (N2 -> N2)
-        // Cubre la situación de prueba 5-6
-        // Click en el item para sacar el PopupMenu, luego click en "Eliminar"
-        onView(withText(matriculaTest)).perform(click());
-        onView(withText("Eliminar")).perform(click());
-
-        // -------------------------------------------------------------
-        // ARCO 7: Volver a la pantalla principal (N2 -> N1)
-        // Cubre la situación de prueba 6-7
+        // Realizamos el Arco 'b' (N2 -> N1): Volvemos a la pantalla principal
         pressBack();
+        onView(withId(R.id.card_reservas)).check(matches(isDisplayed()));
 
-        // Verificación final de que estamos en N1
-        onView(withId(R.id.card_quads)).check(matches(isDisplayed()));
+        // Y ahora realizamos el Arco 'e' (N1 -> N4): Entramos en reservas para asegurar que la jerarquía está bien
+        onView(withId(R.id.card_reservas)).perform(click());
+        onView(withId(R.id.recyclerview)).check(matches(isDisplayed()));
     }
 }

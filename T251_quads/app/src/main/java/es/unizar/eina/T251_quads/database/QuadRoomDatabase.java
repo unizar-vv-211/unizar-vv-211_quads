@@ -57,7 +57,7 @@ public abstract class QuadRoomDatabase extends RoomDatabase {
      * @param context El contexto de la aplicación, necesario para la construcción de la base de datos.
      * @return La instancia única de QuadRoomDatabase.
      */
-    static QuadRoomDatabase getDatabase(final Context context) {
+    public static QuadRoomDatabase getDatabase(final Context context) {
         if (INSTANCE == null) {
             synchronized (QuadRoomDatabase.class) {
                 if (INSTANCE == null) {

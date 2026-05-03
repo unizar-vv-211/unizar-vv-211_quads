@@ -1,4 +1,4 @@
-package es.unizar.eina.T251_quads;
+package es.unizar.eina.T251_quads.system;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;

@@ -132,7 +132,21 @@ public class QuadEdit extends AppCompatActivity {
             } else {
                 String matricula = mEditMatriculaView.getText().toString();
                 String tipo = mSpinnerTipoView.getSelectedItem().toString();
-                float precioDia = Float.parseFloat(mEditPrecioView.getText().toString());
+                float precioDia;
+                try {
+                    precioDia = Float.parseFloat(mEditPrecioView.getText().toString());
+                } catch (NumberFormatException e) {
+                    Toast.makeText(this, "El precio debe ser un número válido", Toast.LENGTH_SHORT).show();
+                    setResult(RESULT_CANCELED, replyIntent);
+                    return;
+                }
+
+                if (precioDia < 0) {
+                    Toast.makeText(this, "El precio no puede ser negativo", Toast.LENGTH_SHORT).show();
+                    setResult(RESULT_CANCELED, replyIntent);
+                    return;
+                }
+
                 String descripcion = mEditDescripcionView.getText().toString();
 
                 replyIntent.putExtra(EXTRA_REPLY_MATRICULA, matricula);

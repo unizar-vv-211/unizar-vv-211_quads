@@ -60,6 +60,10 @@ public class QuadRepository {
      * de fallo o excepción se ha devuelto -1.
      */
     public long insert(Quad quad) {
+        if (quad.getPrecioDia() < 0) {
+            Log.d("QuadRepository", "insert() rechazado: precio negativo (" + quad.getPrecioDia() + ")");
+            return -1;
+        }
         Future<Long> future = QuadRoomDatabase.databaseWriteExecutor.submit(
                 () -> mQuadDao.insert(quad));
         try {
@@ -78,6 +82,10 @@ public class QuadRepository {
      * @return Un valor entero con el número de filas que han sido modificadas.
      */
     public int update(Quad quad) {
+        if (quad.getPrecioDia() < 0) {
+            Log.d("QuadRepository", "update() rechazado: precio negativo (" + quad.getPrecioDia() + ")");
+            return -1;
+        }
         Future<Integer> future = QuadRoomDatabase.databaseWriteExecutor.submit(
                 () -> mQuadDao.update(quad));
         try {

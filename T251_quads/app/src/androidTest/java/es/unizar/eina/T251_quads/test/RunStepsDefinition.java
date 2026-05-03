@@ -22,6 +22,7 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.replaceText;
+import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -220,75 +221,6 @@ public class RunStepsDefinition {
     }
 
     // -------------------------------------------------------------------------
-    // Steps de Reservas
-    // -------------------------------------------------------------------------
-
-    @Given("Voy a la lista de reservas")
-    public void voy_a_la_lista_de_reservas() {
-        onView(withId(R.id.card_reservas))
-                .check(matches(isDisplayed()))
-                .perform(click());
-    }
-
-    @Given("Estoy en la pantalla de crear reserva")
-    public void estoy_en_la_pantalla_de_crear_reserva() {
-        onView(withId(R.id.card_reservas))
-                .check(matches(isDisplayed()))
-                .perform(click());
-        onView(withId(R.id.fab))
-                .check(matches(isDisplayed()))
-                .perform(click());
-    }
-
-    @When("Introduzco {string} como cliente")
-    public void introduzco_cliente(String cliente) {
-        onView(withId(R.id.edit_cliente)).perform(replaceText(cliente), closeSoftKeyboard());
-    }
-
-    @When("Introduzco {string} como telefono")
-    public void introduzco_telefono(String tel) {
-        onView(withId(R.id.edit_telefono)).perform(replaceText(tel), closeSoftKeyboard());
-    }
-
-    @When("Introduzco {string} como numero de cascos")
-    public void introduzco_numero_de_cascos(String cascos) {
-        onView(withId(R.id.edit_cascos))
-                .perform(replaceText(cascos), closeSoftKeyboard());
-    }
-
-    @When("Selecciono la fecha {string} como recogida")
-    public void selecciono_fecha_recogida(String fecha) {
-        onView(withId(R.id.edit_fecha_recogida)).perform(replaceText(fecha), closeSoftKeyboard());
-    }
-
-    @When("Selecciono la fecha {string} como devolucion")
-    public void selecciono_fecha_devolucion(String fecha) {
-        onView(withId(R.id.edit_fecha_devolucion)).perform(replaceText(fecha), closeSoftKeyboard());
-    }
-
-    @When("Selecciono el quad {string}")
-    public void selecciono_el_quad(String matricula) {
-        onView(withText(containsString(matricula))).perform(click());
-    }
-
-    @When("Confirmo la reserva")
-    public void confirmo_la_reserva() {
-        onView(withId(R.id.button_save)).perform(click());
-    }
-
-    @Then("Deberia ver la reserva de {string} en la lista")
-    public void deberia_ver_la_reserva_en_la_lista(String nombre) {
-        // Esperar a que el RecyclerView cargue el item desde LiveData/Room.
-        waitForRecyclerViewItem(R.id.recyclerview, nombre, 5000);
-        onView(withText(nombre)).check(matches(isDisplayed()));
-    }
-
-    @Then("Deberia ver un error de fecha invalida")
-    public void deberia_ver_error_fecha() {
-        onView(withText("Nueva Reserva")).check(matches(isDisplayed()));
-    }
-
-    // -------------------------------------------------------------------------
     // Steps del escenario "Precio Congelado"
     // -------------------------------------------------------------------------
 
@@ -342,13 +274,9 @@ public class RunStepsDefinition {
     public void visualizo_la_reserva_de(String cliente) {
         this.lastClienteVisualizado = cliente;
 
-        // Esperar a que LiveData entregue los datos y DiffUtil actualice el
-        // RecyclerView.
         waitForRecyclerViewItem(R.id.recyclerview, cliente, 5000);
 
         // Scroll al item del cliente para asegurar que está en pantalla.
-        // IMPORTANTE: No hacemos click() porque eso levanta el PopupMenu contextual
-        // y taparía la interfaz para las siguientes comprobaciones.
         onView(withId(R.id.recyclerview))
                 .perform(RecyclerViewActions.scrollTo(
                         hasDescendant(withText(containsString(cliente)))));
@@ -389,5 +317,141 @@ public class RunStepsDefinition {
                                 hasDescendant(allOf(
                                         withId(R.id.textViewPrecio),
                                         withText(containsString(valorNumerico))))))));
+    }
+    // =================================================================
+    // PASOS PARA EL MÓDULO DE RESERVAS Y PRICE FREEZE
+    // =================================================================
+
+    @Given("Existe un quad {string} disponible con precio {string}")
+    public void existe_quad_disponible_con_precio(String matricula, String precio) {
+        // Creamos el quad navegando por la UI para preparar el entorno
+        onView(withId(R.id.card_quads)).perform(click());
+        onView(withId(R.id.fab)).perform(click());
+        onView(withId(R.id.edit_matricula)).perform(replaceText(matricula), closeSoftKeyboard());
+        onView(withId(R.id.edit_precio_dia)).perform(replaceText(precio), closeSoftKeyboard());
+        onView(withId(R.id.edit_descripcion)).perform(replaceText("Quad para UAT"), closeSoftKeyboard());
+        onView(withId(R.id.button_save)).perform(click());
+        pressBack(); // Volvemos al menú principal
+    }
+
+    @Given("Existe un quad {string} disponible")
+    public void existe_quad_disponible(String matricula) {
+        // Reutilizamos el método anterior con un precio por defecto
+        existe_quad_disponible_con_precio(matricula, "50.0");
+    }
+
+    @Given("Estoy en la pantalla de creacion de Reservas")
+    public void estoy_en_pantalla_creacion_reservas() {
+        onView(withId(R.id.card_reservas)).perform(click());
+        onView(withId(R.id.fab)).perform(click());
+    }
+
+    @When("Introduzco los datos del cliente {string} con telefono {string}")
+    public void introduzco_datos_cliente(String cliente, String telefono) {
+        onView(withId(R.id.edit_cliente)).perform(replaceText(cliente), closeSoftKeyboard());
+        onView(withId(R.id.edit_telefono)).perform(replaceText(telefono), closeSoftKeyboard());
+    }
+
+    @When("Solicito {string} cascos")
+    public void solicito_cascos(String cascos) {
+        onView(withId(R.id.edit_cascos)).perform(replaceText(cascos), closeSoftKeyboard());
+    }
+
+    @When("Selecciono fechas del {string} al {string}")
+    public void selecciono_fechas(String inicio, String fin) {
+        onView(withId(R.id.edit_fecha_recogida)).perform(replaceText(inicio), closeSoftKeyboard());
+        onView(withId(R.id.edit_fecha_devolucion)).perform(replaceText(fin), closeSoftKeyboard());
+    }
+
+    @When("Asigno el quad {string}")
+    public void asigno_el_quad(String matricula) {
+        // Hacemos scroll hasta el checkbox que contiene la matrícula y lo marcamos
+        onView(withText(org.hamcrest.Matchers.containsString(matricula))).perform(scrollTo(), click());
+    }
+
+    @Then("Deberia ver la reserva de {string} en el listado principal")
+    public void deberia_ver_reserva_listado(String cliente) {
+        onView(withId(R.id.recyclerview)).check(matches(isDisplayed()));
+        onView(withText(org.hamcrest.Matchers.containsString(cliente))).check(matches(isDisplayed()));
+    }
+
+    @Then("El sistema debe mantenerme en la pantalla de creacion de Reservas")
+    public void sistema_mantiene_pantalla_reservas() {
+        // Seguimos en el formulario, el guardado fue bloqueado por validación
+        onView(withId(R.id.edit_cliente)).check(matches(isDisplayed()));
+    }
+
+    @When("Confirmo la reserva")
+    public void confirmo_la_reserva() {
+        onView(withId(R.id.button_save)).perform(click());
+    }
+
+    @Then("El sistema debe mantenerme en la pantalla de creacion de Quads")
+    public void sistema_mantiene_pantalla_creacion_quads() {
+        // Seguimos en el formulario de quads, el guardado fue bloqueado por validación
+        onView(withId(R.id.edit_matricula)).check(matches(isDisplayed()));
+    }
+
+    @Given("Existe una reserva previa del quad {string} entre {string} y {string}")
+    public void existe_reserva_previa(String quad, String inicio, String fin) {
+        // Creamos una reserva previa para provocar el solapamiento en el siguiente step
+        estoy_en_pantalla_creacion_reservas();
+        introduzco_datos_cliente("Cliente Previo Solape", "600000000");
+        solicito_cascos("0");
+        selecciono_fechas(inicio, fin);
+        asigno_el_quad(quad);
+        onView(withId(R.id.button_save)).perform(click());
+        pressBack(); // Volvemos al menú principal
+    }
+
+    @Given("Una reserva activa para {string} vinculada al quad {string} con un precio total pactado de {string}")
+    public void reserva_activa_precio_pactado(String cliente, String quad, String precioTotal) {
+        existe_quad_disponible_con_precio(quad, "50.0");
+        estoy_en_pantalla_creacion_reservas();
+        introduzco_datos_cliente(cliente, "600999999");
+        solicito_cascos("0");
+        selecciono_fechas("01-01-2030", "03-01-2030"); // 2 días a 50€ = 100€
+        asigno_el_quad(quad);
+        onView(withId(R.id.button_save)).perform(click());
+        pressBack(); // Volvemos al menú principal
+    }
+
+    @When("Modifico el precio base del quad {string} en el inventario a {string} euros")
+    public void modifico_precio_inventario(String matricula, String nuevoPrecio) {
+        onView(withId(R.id.card_quads)).perform(click());
+        // Clic en el quad para abrir el menú de opciones
+        onView(withText(org.hamcrest.Matchers.containsString(matricula))).perform(click());
+        // Clic en "Editar" del PopupMenu de Android
+        onView(withText("Editar")).perform(click());
+        // Cambiamos el precio y guardamos
+        onView(withId(R.id.edit_precio_dia)).perform(replaceText(nuevoPrecio), closeSoftKeyboard());
+        onView(withId(R.id.button_save)).perform(click());
+        pressBack(); // Volvemos al menú principal
+    }
+
+    @When("Navego al listado de reservas")
+    public void navego_listado_reservas() {
+        onView(withId(R.id.card_reservas)).perform(click());
+    }
+
+    @Then("La reserva de {string} debe seguir mostrando un precio total de {string}")
+    public void verifico_precio_congelado(String cliente, String precioTotalEsperado) {
+        // El adaptador muestra "Precio Total: 100,00 €" (locale español) o "100.00 €" (otros).
+        // Para no depender del separador decimal, buscamos solo la parte entera: "100.0" → "100"
+        String valorEntero = precioTotalEsperado.contains(".")
+                ? precioTotalEsperado.substring(0, precioTotalEsperado.indexOf('.'))
+                : precioTotalEsperado;
+
+        // Primero esperamos a que aparezca el item del cliente en el RecyclerView
+        waitForRecyclerViewItem(R.id.recyclerview, cliente, 5000);
+
+        // Luego comprobamos que ese item tiene un TextView de precio con el valor esperado
+        onView(withId(R.id.recyclerview))
+                .check(matches(hasDescendant(
+                        allOf(
+                                hasDescendant(withText(containsString(cliente))),
+                                hasDescendant(allOf(
+                                        withId(R.id.textViewPrecio),
+                                        withText(containsString(valorEntero))))))));
     }
 }

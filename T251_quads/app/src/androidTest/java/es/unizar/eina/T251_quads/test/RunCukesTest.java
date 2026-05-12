@@ -10,8 +10,6 @@ public class RunCukesTest {
 
     @AfterClass
     public static void cleanDatabaseAfterAll() {
-        // Limpiamos la base de datos SOLO una vez que han terminado todos los tests.
-        // Esto permite que los escenarios dependan de datos creados en escenarios anteriores.
         Context context = ApplicationProvider.getApplicationContext();
         es.unizar.eina.T251_quads.database.ReservaRepository reservaRepo = new es.unizar.eina.T251_quads.database.ReservaRepository(
                 (android.app.Application) context);
@@ -20,11 +18,11 @@ public class RunCukesTest {
 
         reservaRepo.deleteAll();
         quadRepo.deleteAll();
-        
+
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
-}
+}

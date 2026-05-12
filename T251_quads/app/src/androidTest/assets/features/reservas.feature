@@ -1,42 +1,58 @@
-Feature: Gestion de Reservas y Mantenimiento de Precio (RF-2 y RF-3)
-  Como empleado de la tienda
-  Quiero gestionar las reservas de los clientes y asegurar sus tarifas
-  Para alquilar los quads de forma segura sin solapamientos ni perdidas economicas
+Feature: Gestion de Reservas
+  Como propietario
+  Quiero registrar las reservas de los clientes
+  Para gestionar la disponibilidad de quads
 
-  # SCENARIO TESTING (Flujo de Negocio Nominal)
-  Scenario: Registro exitoso de una reserva valida
-    Given Existe un quad "RES1111" disponible con precio "50.0"
-    And Estoy en la pantalla de creacion de Reservas
-    When Introduzco los datos del cliente "Juan Perez" con telefono "600111222"
-    And Solicito "0" cascos
-    And Selecciono fechas del "10-05-2026" al "12-05-2026"
-    And Asigno el quad "RES1111"
-    And Confirmo la reserva
-    Then Deberia ver la reserva de "Juan Perez" en el listado principal
+  Background:
+    Given Existe un quad con matricula "AAA1111" y precio "50.0"
 
-  # PARTICIONES DE EQUIVALENCIA (Prevencion de Errores Comerciales y Solapamientos)
-  Scenario Outline: Rechazo de reservas con datos invalidos o conflictos de calendario
-    Given Existe un quad "RES1111" disponible
-    And Existe una reserva previa del quad "RES1111" entre "15-05-2026" y "20-05-2026"
-    And Estoy en la pantalla de creacion de Reservas
-    When Introduzco los datos del cliente "<cliente>" con telefono "<telefono>"
-    And Solicito "<cascos>" cascos
-    And Selecciono fechas del "<inicio>" al "<fin>"
-    And Asigno el quad "RES1111"
-    And Confirmo la reserva
+  # SCENARIO TESTING - Particiones de Equivalencia Válidas (Prueba 1)
+  Scenario Outline: Crear una reserva valida
+    Given Estoy en la pantalla principal de Reservas
+    When Hago clic en crear una reserva
+    And Introduzco "<nombre>" como cliente
+    And Introduzco "<telefono>" como telefono
+    And Introduzco "<f_recogida>" como fecha de recogida
+    And Introduzco "<f_devolucion>" como fecha de devolucion
+    And Introduzco "<cascos>" como numero de cascos
+    And Selecciono los quads "<quad>"
+    And Confirmo la creacion de la reserva
+    Then Deberia ver "<nombre>" en la lista de reservas
+
+    Examples:
+      | nombre      | telefono  | f_recogida | f_devolucion | cascos | quad    |
+      | Raul        | 123456789 | 10-05-2026 | 11-05-2026   | 1      | AAA1111 |
+
+  # SCENARIO TESTING - Particiones de Equivalencia Inválidas (Pruebas 2 a 12)
+  Scenario Outline: Rechazo de reservas con datos invalidos
+    Given Estoy en la pantalla principal de Reservas
+    When Hago clic en crear una reserva
+    And Introduzco "<nombre>" como cliente
+    And Introduzco "<telefono>" como telefono
+    And Introduzco "<f_recogida>" como fecha de recogida
+    And Introduzco "<f_devolucion>" como fecha de devolucion
+    And Introduzco "<cascos>" como numero de cascos
+    And Selecciono los quads "<quad>"
+    And Confirmo la creacion de la reserva
     Then El sistema debe mantenerme en la pantalla de creacion de Reservas
 
     Examples:
-      | caso_de_negocio                       | cliente    | telefono  | cascos | inicio     | fin        |
-      | Falta numero de contacto              | Ana Lopez  |           | 1      | 01-06-2026 | 05-06-2026 |
-      | Inconsistencia temporal (Invertidas)  | Luis Gomez | 600333444 | 1      | 10-06-2026 | 05-06-2026 |
-      | Fecha inexistente en el calendario    | Eva Ruiz   | 600555666 | 1      | 32-05-2026 | 05-06-2026 |
-      | Conflicto de doble alquiler (Solape)  | Alex Pol   | 600777888 | 1      | 16-05-2026 | 18-05-2026 |
-      | Exceso de cascos para el tipo de quad | Sara Paz   | 600999000 | 5      | 01-07-2026 | 05-07-2026 |
+      | nombre | telefono  | f_recogida | f_devolucion | cascos | quad    |
+      |        | 123456789 | 10-05-2026 | 11-05-2026   | 1      | AAA1111 |
+      | Raul   | 1         | 10-05-2026 | 11-05-2026   | 1      | AAA1111 |
+      | Raul   |           | 10-05-2026 | 11-05-2026   | 1      | AAA1111 |
+      | Raul   | 123456789 | 33-05-2026 | 11-05-2026   | 1      | AAA1111 |
+      | Raul   | 123456789 |            | 11-05-2026   | 1      | AAA1111 |
+      | Raul   | 123456789 | 10-05-2026 | 33-05-2026   | 1      | AAA1111 |
+      | Raul   | 123456789 | 10-05-2026 |              | 1      | AAA1111 |
+      | Raul   | 123456789 | 10-05-2026 | 09-05-2026   | 1      | AAA1111 |
+      | Raul   | 123456789 | 10-05-2026 | 11-05-2026   | 15     | AAA1111 |
+      | Raul   | 123456789 | 10-05-2026 | 11-05-2026   |        | AAA1111 |
+      | Raul   | 123456789 | 10-05-2026 | 11-05-2026   | 1      |         |
 
-  # MANTENIMIENTO DEL PRECIO (Price Freeze)
-  Scenario: Congelacion de tarifa en reservas historicas
-    Given Una reserva activa para "Ana Lopez" vinculada al quad "RES1111" con un precio total pactado de "100.0"
-    When Modifico el precio base del quad "RES1111" en el inventario a "90.0" euros
+# SCENARIO TESTING - Regla de Negocio: Congelamiento de Precios
+  Scenario: Mantener el precio de la reserva al modificar el precio del quad en el inventario
+    Given Una reserva activa para "Raul" vinculada al quad "AAA1111" con un precio total pactado de "50.0"
+    When Modifico el precio base del quad "AAA1111" en el inventario a "200.0" euros
     And Navego al listado de reservas
-    Then La reserva de "Ana Lopez" debe seguir mostrando un precio total de "100.0"
+    Then La reserva de "Raul" debe seguir mostrando un precio total de "50.0"

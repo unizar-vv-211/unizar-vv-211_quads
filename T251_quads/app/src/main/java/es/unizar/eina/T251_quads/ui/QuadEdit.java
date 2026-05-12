@@ -82,6 +82,7 @@ public class QuadEdit extends AppCompatActivity {
         }
 
         mEditMatriculaView = findViewById(R.id.edit_matricula);
+        mEditMatriculaView.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.AllCaps()});
         mSpinnerTipoView = findViewById(R.id.spinner_tipo);
         mEditPrecioView = findViewById(R.id.edit_precio_dia);
         mEditDescripcionView = findViewById(R.id.edit_descripcion);
@@ -130,7 +131,7 @@ public class QuadEdit extends AppCompatActivity {
                 setResult(RESULT_CANCELED, replyIntent);
 
             } else {
-                String matricula = mEditMatriculaView.getText().toString();
+                String matricula = mEditMatriculaView.getText().toString().toUpperCase();
                 String tipo = mSpinnerTipoView.getSelectedItem().toString();
                 float precioDia;
                 try {

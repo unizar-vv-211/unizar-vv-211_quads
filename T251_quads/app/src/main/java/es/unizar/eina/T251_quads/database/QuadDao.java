@@ -67,6 +67,18 @@ public interface QuadDao {
     LiveData<List<Quad>> getAllQuads();
 
     /**
+     * Se han recuperado todos los Quads ordenados por tipo.
+     */
+    @Query("SELECT * FROM quads ORDER BY tipo ASC")
+    LiveData<List<Quad>> getAllQuadsByTipo();
+
+    /**
+     * Se han recuperado todos los Quads ordenados por precio por día.
+     */
+    @Query("SELECT * FROM quads ORDER BY precio_dia ASC")
+    LiveData<List<Quad>> getAllQuadsByPrecio();
+
+    /**
      * Cuenta el número de reservas asociadas a un quad específico.
      * La consulta se ejecuta sobre la tabla de unión 'relacion_reserva_quad_table'.
      *

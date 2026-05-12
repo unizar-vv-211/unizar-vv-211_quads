@@ -23,6 +23,15 @@ public class QuadViewModel extends AndroidViewModel {
 
     /** Referencia al Repositorio de Quads, donde se gestiona el acceso a la base de datos. */
     private QuadRepository mRepository;
+    
+    /** Enum para los criterios de ordenación. */
+    public enum SortOrder {
+        MATRICULA, TIPO, PRECIO
+    }
+
+    /** LiveData que almacena el orden seleccionado actualmente. */
+    private MutableLiveData<SortOrder> mSortOrder = new MutableLiveData<>(SortOrder.MATRICULA);
+
     /** {@code LiveData} que contiene la lista observable de todos los Quads. */
     private final LiveData<List<Quad>> mAllQuads;
 
@@ -34,14 +43,34 @@ public class QuadViewModel extends AndroidViewModel {
 
     /**
      * Constructor del ViewModel.
-     * Se ha inicializado el repositorio y se ha recuperado la lista observable de Quads.
+     * Se ha inicializado el repositorio y se ha configurado el switchMap para reaccionar a los cambios de ordenación.
      *
      * @param application El contexto de la aplicación.
      */
     public QuadViewModel(Application application) {
         super(application);
         mRepository = new QuadRepository(application);
-        mAllQuads = mRepository.getAllQuads();
+        
+        mAllQuads = androidx.lifecycle.Transformations.switchMap(mSortOrder, order -> {
+            switch (order) {
+                case TIPO:
+                    return mRepository.getAllQuadsByTipo();
+                case PRECIO:
+                    return mRepository.getAllQuadsByPrecio();
+                case MATRICULA:
+                default:
+                    return mRepository.getAllQuads();
+            }
+        });
+    }
+
+    /**
+     * Establece el nuevo orden de la lista.
+     *
+     * @param order El criterio de ordenación.
+     */
+    public void setSortOrder(SortOrder order) {
+        mSortOrder.setValue(order);
     }
 
     /**

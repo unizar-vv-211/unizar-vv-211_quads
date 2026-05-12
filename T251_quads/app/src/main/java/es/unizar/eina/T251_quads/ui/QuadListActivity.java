@@ -170,15 +170,26 @@ public class QuadListActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         if (mAdapter != null && mAdapter.isSelectionMode()) {
             getMenuInflater().inflate(R.menu.menu_quad_selection, menu);
-            return true;
+        } else {
+            getMenuInflater().inflate(R.menu.menu_quad_filtros, menu);
         }
-        return super.onCreateOptionsMenu(menu);
+        return true;
     }
     
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_delete_selected) {
+        int id = item.getItemId();
+        if (id == R.id.action_delete_selected) {
             deleteSelectedQuads();
+            return true;
+        } else if (id == R.id.sort_matricula) {
+            mQuadViewModel.setSortOrder(QuadViewModel.SortOrder.MATRICULA);
+            return true;
+        } else if (id == R.id.sort_tipo) {
+            mQuadViewModel.setSortOrder(QuadViewModel.SortOrder.TIPO);
+            return true;
+        } else if (id == R.id.sort_precio) {
+            mQuadViewModel.setSortOrder(QuadViewModel.SortOrder.PRECIO);
             return true;
         }
         return super.onOptionsItemSelected(item);

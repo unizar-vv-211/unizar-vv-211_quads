@@ -19,10 +19,7 @@ import java.util.concurrent.TimeoutException;
  */
 public class QuadRepository {
 
-    /** Referencia al Data Access Object para la entidad Quad. */
     private final QuadDao mQuadDao;
-    /** Lista de todos los Quads disponibles. */
-    private final LiveData<List<Quad>> mAllQuads;
 
     /** Constante que define el tiempo máximo de espera para las operaciones. */
     private static final long TIMEOUT = 15000;
@@ -35,7 +32,6 @@ public class QuadRepository {
     public QuadRepository(Application application) {
         QuadRoomDatabase db = QuadRoomDatabase.getDatabase(application);
         mQuadDao = db.quadDao();
-        mAllQuads = mQuadDao.getAllQuads();
     }
 
     /**
@@ -46,7 +42,21 @@ public class QuadRepository {
      * @return Objeto LiveData que contiene la lista de todas las entidades Quad.
      */
     public LiveData<List<Quad>> getAllQuads() {
-        return mAllQuads;
+    return mQuadDao.getAllQuads();
+    }
+
+    /**
+     * Recupera todos los quads ordenados por tipo.
+     */
+    public LiveData<List<Quad>> getAllQuadsByTipo() {
+        return mQuadDao.getAllQuadsByTipo();
+    }
+
+    /**
+     * Recupera todos los quads ordenados por precio.
+     */
+    public LiveData<List<Quad>> getAllQuadsByPrecio() {
+        return mQuadDao.getAllQuadsByPrecio();
     }
 
     /**

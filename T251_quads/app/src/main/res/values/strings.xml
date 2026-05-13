@@ -13,7 +13,14 @@
     <string name="add_quad">Añadir Quad</string>
     <string name="menu_delete">Eliminar Quad</string>
     <string name="menu_edit">Editar Quad</string>
+    <string name="menu_ordenar_precio">Precio</string>
+    <string name="menu_ordenar_tipo">Tipo</string>
+    <string name="menu_ordenar_matricula">Matrícula</string>
 
+    <string name="menu_filtro_todas">Todas</string>
+    <string name="menu_filtro_futuras">Futuras</string>
+    <string name="menu_filtro_actuales">Activas</string>
+    <string name="menu_filtro_pasadas">Pasadas</string>
 
 
 </resources>

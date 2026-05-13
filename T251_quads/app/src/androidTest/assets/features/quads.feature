@@ -19,7 +19,7 @@ Feature: Gestion del Inventario de Quads
       | AAA1111   | Monoplaza | 10.0   | Quad validacion monoplaza              |
       | AAA1112   | Biplaza   | 10.0   | Quad validacion biplaza                |
 
-  # SCENARIO TESTING - Particiones de Equivalencia Inválidas (Pruebas 3, 4, 5, 7, 8)
+  # SCENARIO TESTING - Particiones de Equivalencia Inválidas (Pruebas 3, 4, 5, 6, 7)
   Scenario Outline: Rechazo de quads con datos invalidos
     Given Estoy en la pantalla principal de Quads
     When Hago clic en crear un quad

@@ -93,18 +93,18 @@ public class SystemTestHelpers {
         onView(withId(R.id.button_save)).perform(click());
     }
 
-    public static void rellenarYGuardarReserva(String cliente, String telefono, String fRecogida, String fDevolucion,
-            String cascos, String matriculaQuad) {
+    public static void rellenarYGuardarReserva(String cliente, String telefono, String fRecogida, String fDevolucion, String cascos, String matriculaQuad) {
         onView(withId(R.id.edit_cliente)).perform(replaceText(cliente), closeSoftKeyboard());
         onView(withId(R.id.edit_telefono)).perform(replaceText(telefono), closeSoftKeyboard());
         onView(withId(R.id.edit_fecha_recogida)).perform(replaceText(fRecogida), closeSoftKeyboard());
         onView(withId(R.id.edit_fecha_devolucion)).perform(replaceText(fDevolucion), closeSoftKeyboard());
         onView(withId(R.id.edit_cascos)).perform(replaceText(cascos), closeSoftKeyboard());
 
-        // Buscamos el CheckBox que tenga el texto que contiene la matrícula,
-        // nos aseguramos de hacer scroll hasta él y luego pulsamos.
-        onView(withText(containsString(matriculaQuad)))
-                .perform(scrollTo(), click());
+        // Solo pulsamos el CheckBox si hemos especificado una matrícula (Creación)
+        // Si pasamos null (Edición), dejamos los que ya estén marcados.
+        if (matriculaQuad != null) {
+            onView(withText(containsString(matriculaQuad))).perform(scrollTo(), click());
+        }
 
         onView(withId(R.id.button_save)).perform(scrollTo(), click());
     }

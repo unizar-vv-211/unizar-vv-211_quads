@@ -1,4 +1,0 @@
-androidx.test.espresso.contrib
-id androidx_test_espresso_contrib_drawer_layout_tag
-style WhiteBackgroundDialogTheme
-style WhiteBackgroundTheme

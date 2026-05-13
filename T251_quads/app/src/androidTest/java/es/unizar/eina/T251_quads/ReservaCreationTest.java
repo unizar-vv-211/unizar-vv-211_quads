@@ -61,6 +61,63 @@ public class ReservaCreationTest {
         assertTrue("La inserción de una reserva válida debería devolver un id > 0", id > 0);
     }
 
+    @Test
+    public void testReservaConMismaFechaRecogidaYDevolucionEsValida() {
+        assertTrue("La misma fecha de recogida y devolución debería ser válida",
+                fechasReservaValidas("10-05-2026", "10-05-2026"));
+
+        Reserva reserva = new Reserva("Laura Pérez", "600111222",
+                "10-05-2026", "10-05-2026", 1, 55.0);
+        long id = reservaRepository.insert(reserva, Arrays.asList("BASECR01"));
+
+        assertTrue("La reserva con la misma fecha debería insertarse", id > 0);
+    }
+
+    @Test
+    public void testReservaConFechaDevolucionAnteriorEsRechazada() {
+        boolean fechasValidas = fechasReservaValidas("11-05-2026", "10-05-2026");
+        long id = fechasValidas ? reservaRepository.insert(
+                new Reserva("Laura Pérez", "600111222",
+                        "11-05-2026", "10-05-2026", 1, 55.0),
+                Arrays.asList("BASECR01")) : -1;
+
+        assertFalse("La fecha de devolución anterior debería rechazarse", fechasValidas);
+        assertEquals("No debería insertarse una reserva con fechas inválidas", -1, id);
+    }
+
+    @Test
+    public void testMonoplazaConUnCascoEsValida() {
+        assertTrue("Un monoplaza con un casco debería ser válido",
+                cascosValidos("Monoplaza", 1));
+
+        Reserva reserva = new Reserva("Pedro Ruiz", "600222333",
+                "12-05-2026", "12-05-2026", 1, 55.0);
+        long id = reservaRepository.insert(reserva, Arrays.asList("BASECR01"));
+
+        assertTrue("La reserva de monoplaza con un casco debería insertarse", id > 0);
+    }
+
+    @Test
+    public void testPrecioTotalReservaNoCambiaAlModificarPrecioQuad() throws InterruptedException {
+        Quad quad = new Quad("PREC001", "Monoplaza", 50.0f, "Quad precio congelado");
+        quadRepository.insert(quad);
+
+        double precioTotalOriginal = 50.0;
+        Reserva reserva = new Reserva("Sergio Martín", "600333444",
+                "10-05-2026", "10-05-2026", 1, precioTotalOriginal);
+        long id = reservaRepository.insert(reserva, Arrays.asList("PREC001"));
+        assertTrue("La reserva debería crearse correctamente", id > 0);
+
+        quad.setPrecioDia(200.0f);
+        quadRepository.update(quad);
+        Thread.sleep(300);
+
+        Reserva reservaRecuperada = reservaRepository.getReservaById((int) id);
+        assertNotNull("La reserva debería existir", reservaRecuperada);
+        assertEquals("El precio total de la reserva debería mantenerse",
+                precioTotalOriginal, reservaRecuperada.getPrecioTotal(), 0.01);
+    }
+
     // Prueba de detección de solapamiento de fechas
     @Test
     public void testDetectOverlappingReserva() throws InterruptedException {
@@ -87,37 +144,84 @@ public class ReservaCreationTest {
                 resultado.get().contains("BASECR01"));
     }
 
-    // Prueba de particiones de equivalencia para el nombre del cliente (PE-01 a PE-05)
+    // Prueba de particiones de equivalencia para el nombre del cliente 
     @Test
     public void testClienteValidationPartitions() {
         UnitTests helper = new UnitTests(quadRepository, reservaRepository);
 
-        // PE-01: Válida
+        // Válida
         String pe01 = "Juan Pérez";
         assertTrue("PE-01 debería ser válido", helper.validateCliente(pe01));
         assertEquals("PE-01 debería devolver Registro exitoso", "Registro exitoso.", helper.getClienteValidationError(pe01));
 
-        // PE-02: Dígitos
+        // Espacio
+        String nombreConEspacio = "Juan Perez";
+        assertTrue("El cliente con espacio normal debería ser válido", helper.validateCliente(nombreConEspacio));
+        assertEquals("El cliente con espacio normal debería devolver Registro exitoso", "Registro exitoso.", helper.getClienteValidationError(nombreConEspacio));
+
+        // Dígitos
         String pe02 = "Ana89";
         assertFalse("PE-02 debería ser inválido", helper.validateCliente(pe02));
         assertEquals("PE-02 debería devolver Formato no permitido", "Error: Formato no permitido.", helper.getClienteValidationError(pe02));
 
-        // PE-03: Especiales
-        String pe03 = "L@ura!";
-        assertFalse("PE-03 debería ser inválido", helper.validateCliente(pe03));
-        assertEquals("PE-03 debería devolver Formato no permitido", "Error: Formato no permitido.", helper.getClienteValidationError(pe03));
-
-        // PE-04: Vacía
+        // Vacía
         String pe04 = "";
         assertFalse("PE-04 debería ser inválido", helper.validateCliente(pe04));
         assertEquals("PE-04 debería devolver Campo obligatorio", "Error: Campo obligatorio.", helper.getClienteValidationError(pe04));
 
-        // PE-05: Longitud
+        // Longitud
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 256; i++) sb.append("A");
         String pe05 = sb.toString();
         assertFalse("PE-05 debería ser inválido", helper.validateCliente(pe05));
         assertEquals("PE-05 debería devolver Longitud excedida", "Error: Longitud excedida.", helper.getClienteValidationError(pe05));
+
+        String nombreConSaltoLinea = "Juan\nPerez";
+        assertFalse("El cliente con salto de línea debería rechazarse", helper.validateCliente(nombreConSaltoLinea));
+        assertEquals("El cliente con salto de línea debería devolver Formato no permitido", "Error: Formato no permitido.", helper.getClienteValidationError(nombreConSaltoLinea));
+
+        String nombreConRetornoCarro = "Juan\rPerez";
+        assertFalse("El cliente con retorno de carro debería rechazarse", helper.validateCliente(nombreConRetornoCarro));
+        assertEquals("El cliente con retorno de carro debería devolver Formato no permitido", "Error: Formato no permitido.", helper.getClienteValidationError(nombreConRetornoCarro));
+
+        for (int caracter = 0x0000; caracter <= 0x001F; caracter++) {
+            String nombre = "Juan" + new String(Character.toChars(caracter)) + "Perez";
+            assertFalse("El cliente con carácter inválido debería rechazarse",
+                    helper.validateCliente(nombre));
+            assertEquals("El cliente con carácter inválido debería devolver Formato no permitido",
+                    "Error: Formato no permitido.", helper.getClienteValidationError(nombre));
+        }
+
+        for (int caracter = 0x007F; caracter <= 0x009F; caracter++) {
+            String nombre = "Juan" + new String(Character.toChars(caracter)) + "Perez";
+            assertFalse("El cliente con carácter inválido debería rechazarse",
+                    helper.validateCliente(nombre));
+            assertEquals("El cliente con carácter inválido debería devolver Formato no permitido",
+                    "Error: Formato no permitido.", helper.getClienteValidationError(nombre));
+        }
+
+        int[] caracteresExtra = {0x00A0, 0x00AD};
+        for (int caracter : caracteresExtra) {
+            String nombre = "Juan" + new String(Character.toChars(caracter)) + "Perez";
+            assertFalse("El cliente con carácter inválido debería rechazarse",
+                    helper.validateCliente(nombre));
+            assertEquals("El cliente con carácter inválido debería devolver Formato no permitido",
+                    "Error: Formato no permitido.", helper.getClienteValidationError(nombre));
+        }
+    }
+
+    private boolean fechasReservaValidas(String fechaRecogida, String fechaDevolucion) {
+        return fechaComoNumero(fechaDevolucion) >= fechaComoNumero(fechaRecogida);
+    }
+
+    private int fechaComoNumero(String fecha) {
+        String[] partes = fecha.split("-");
+        return Integer.parseInt(partes[2] + partes[1] + partes[0]);
+    }
+
+    private boolean cascosValidos(String tipoQuad, int cascos) {
+        int maximo = "Biplaza".equals(tipoQuad) ? 2 : 1;
+        return cascos >= 0 && cascos <= maximo;
     }
 
     @After

@@ -219,7 +219,7 @@ public class RunStepsDefinition {
         es.unizar.eina.T251_quads.database.ReservaRepository repository = new es.unizar.eina.T251_quads.database.ReservaRepository(
                 (android.app.Application) context);
 
-        // Inyectamos la reserva directamente en la base de datos con el precio pactado
+        // Metemos la reserva directamente en la base de datos con el precio pactado
         es.unizar.eina.T251_quads.database.Reserva nuevaReserva = new es.unizar.eina.T251_quads.database.Reserva(
                 cliente,
                 "600999999", // Teléfono por defecto

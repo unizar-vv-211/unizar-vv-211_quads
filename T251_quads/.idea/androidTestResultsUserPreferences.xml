@@ -37,8 +37,8 @@
               <option name="preferredColumnWidths">
                 <map>
                   <entry key="Duration" value="90" />
-                  <entry key="Pixel_3a" value="120" />
                   <entry key="Tests" value="360" />
+                  <entry key="samsung SM-P610" value="120" />
                 </map>
               </option>
             </AndroidTestResultsTableState>
@@ -59,14 +59,14 @@
             </AndroidTestResultsTableState>
           </value>
         </entry>
-        <entry key="-242772303">
+        <entry key="-343365380">
           <value>
             <AndroidTestResultsTableState>
               <option name="preferredColumnWidths">
                 <map>
                   <entry key="Duration" value="90" />
-                  <entry key="Pixel_3a" value="120" />
                   <entry key="Tests" value="360" />
+                  <entry key="samsung SM-P610" value="120" />
                 </map>
               </option>
             </AndroidTestResultsTableState>
@@ -109,6 +109,19 @@
                   <entry key="Tests" value="360" />
                   <entry key="Xiaomi 24116RACCG" value="120" />
                   <entry key="samsung SM-A236B" value="120" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
+        <entry key="720340832">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="Tests" value="360" />
+                  <entry key="samsung SM-P610" value="120" />
                 </map>
               </option>
             </AndroidTestResultsTableState>

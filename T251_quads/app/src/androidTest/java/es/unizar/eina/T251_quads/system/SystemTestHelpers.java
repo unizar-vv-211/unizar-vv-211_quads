@@ -20,7 +20,7 @@ import es.unizar.eina.T251_quads.R;
 
 public class SystemTestHelpers {
 
-    // --- NAVEGACIÓN BASE ---
+    // NAVEGACIÓN BASE
     public static void irAQuads() {
         onView(withId(R.id.card_quads)).perform(click());
     }
@@ -55,7 +55,7 @@ public class SystemTestHelpers {
         pulsarOpcionEnLista(posicion, "Modificar");
     }
 
-    // --- MENÚS (Ordenación y Filtros) ---
+    // MENÚS (Ordenación y Filtros)
     public static void seleccionarOrdenQuads(int resIdOpcion) {
         // Buscamos el botón directamente por su descripción en la barra superior
         onView(withContentDescription("Ordenar")).perform(click());
@@ -70,7 +70,7 @@ public class SystemTestHelpers {
         onView(withText(resIdOpcion)).perform(click());
     }
 
-    // --- FORMULARIOS ---
+    // FORMULARIOS
     public static void cancelarFormulario() {
         volverAtras();
     }
@@ -93,7 +93,8 @@ public class SystemTestHelpers {
         onView(withId(R.id.button_save)).perform(click());
     }
 
-    public static void rellenarYGuardarReserva(String cliente, String telefono, String fRecogida, String fDevolucion, String cascos, String matriculaQuad) {
+    public static void rellenarYGuardarReserva(String cliente, String telefono, String fRecogida, String fDevolucion,
+            String cascos, String matriculaQuad) {
         onView(withId(R.id.edit_cliente)).perform(replaceText(cliente), closeSoftKeyboard());
         onView(withId(R.id.edit_telefono)).perform(replaceText(telefono), closeSoftKeyboard());
         onView(withId(R.id.edit_fecha_recogida)).perform(replaceText(fRecogida), closeSoftKeyboard());

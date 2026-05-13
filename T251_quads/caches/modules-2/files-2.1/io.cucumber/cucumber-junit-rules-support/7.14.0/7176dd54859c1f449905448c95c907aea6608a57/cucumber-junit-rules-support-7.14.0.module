@@ -1,0 +1,158 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "io.cucumber",
+    "module": "cucumber-junit-rules-support",
+    "version": "7.14.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.3"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseVariantReleaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "io.cucumber",
+          "module": "cucumber-java",
+          "version": {
+            "requires": "7.14.0"
+          }
+        },
+        {
+          "group": "io.cucumber",
+          "module": "cucumber-junit",
+          "version": {
+            "requires": "7.14.0"
+          }
+        },
+        {
+          "group": "junit",
+          "module": "junit",
+          "version": {
+            "requires": "4.13.2"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk8",
+          "version": {
+            "requires": "1.9.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "cucumber-junit-rules-support-7.14.0.aar",
+          "url": "cucumber-junit-rules-support-7.14.0.aar",
+          "size": 7421,
+          "sha512": "3d03624beda8b8f3cc4d7ca243ea903df615df2da0a639fd7d23b5ed00f0baf6248bacf1ee10ae1ccaf51bce61774c524457a43dd48e73a1bc0b407e531ea078",
+          "sha256": "6267e959fa2e70bdcda504e8fe7b6881dfe44ddc9b6cba191f73b9c7457c2b66",
+          "sha1": "babb1365584ad5679e71adaa879be37c831e28ef",
+          "md5": "d740e9789ad0dbe60677221117684291"
+        }
+      ]
+    },
+    {
+      "name": "releaseVariantReleaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "io.cucumber",
+          "module": "cucumber-java",
+          "version": {
+            "requires": "7.14.0"
+          }
+        },
+        {
+          "group": "io.cucumber",
+          "module": "cucumber-junit",
+          "version": {
+            "requires": "7.14.0"
+          }
+        },
+        {
+          "group": "junit",
+          "module": "junit",
+          "version": {
+            "requires": "4.13.2"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk8",
+          "version": {
+            "requires": "1.9.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "cucumber-junit-rules-support-7.14.0.aar",
+          "url": "cucumber-junit-rules-support-7.14.0.aar",
+          "size": 7421,
+          "sha512": "3d03624beda8b8f3cc4d7ca243ea903df615df2da0a639fd7d23b5ed00f0baf6248bacf1ee10ae1ccaf51bce61774c524457a43dd48e73a1bc0b407e531ea078",
+          "sha256": "6267e959fa2e70bdcda504e8fe7b6881dfe44ddc9b6cba191f73b9c7457c2b66",
+          "sha1": "babb1365584ad5679e71adaa879be37c831e28ef",
+          "md5": "d740e9789ad0dbe60677221117684291"
+        }
+      ]
+    },
+    {
+      "name": "releaseVariantReleaseSourcePublication",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "cucumber-junit-rules-support-7.14.0-sources.jar",
+          "url": "cucumber-junit-rules-support-7.14.0-sources.jar",
+          "size": 3038,
+          "sha512": "16270916bcb819b2a648463b3c7add5a9ae6fa58050ac778eeb4abf35cac6519ac002c5c8b5131951e87ee17a2411be30f9ca97318965f5fafe4fef8afbff147",
+          "sha256": "07cb8c3e0597577041fb4844fee02b37c47c0cbb5fafc639c36a6f876c25aaba",
+          "sha1": "58e5bb1b577212114a84a283a6ada24ef7bc4521",
+          "md5": "c7a44ec25597d360632ac49139365930"
+        }
+      ]
+    },
+    {
+      "name": "releaseVariantReleaseJavaDocPublication",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "javadoc",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "cucumber-junit-rules-support-7.14.0-javadoc.jar",
+          "url": "cucumber-junit-rules-support-7.14.0-javadoc.jar",
+          "size": 271566,
+          "sha512": "b71ac0b54722c32300aef404152951dc004dafb36025c17ad40e6979e1230dc10321731172fdc410005e9b78e651a1fed5adf6b2c0950136c102dd4f762c8d39",
+          "sha256": "689836a9b1b576bc3169722ceb4066304d6c730854a15a0ecb886d4390381b7b",
+          "sha1": "7a57cb91ea20c7532ebaa22dda8ed62534d63357",
+          "md5": "67634f3de57b4ae2db0e8e19fbf3a380"
+        }
+      ]
+    }
+  ]
+}

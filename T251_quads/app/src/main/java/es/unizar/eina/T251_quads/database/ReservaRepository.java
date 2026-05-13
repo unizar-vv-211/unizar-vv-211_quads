@@ -188,6 +188,17 @@ public class ReservaRepository {
             return -1;
         }
     }
+
+    public Reserva getReservaById(int id) {
+        Future<Reserva> future = QuadRoomDatabase.databaseWriteExecutor.submit(
+                () -> mReservaDao.getReservaById(id));
+        try {
+            return future.get(TIMEOUT, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException ex) {
+            Log.d("ReservaRepository", ex.getClass().getSimpleName() + ex.getMessage());
+            return null;
+        }
+    }
     
     /**
      * Elimina todas las Reservas de la base de datos.

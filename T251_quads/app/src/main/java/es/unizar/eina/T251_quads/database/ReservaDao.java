@@ -128,4 +128,7 @@ public interface ReservaDao {
            "AND r.id != :reservaId " +
            "AND NOT (r.fechaDevolucion < :fechaInicio OR r.fechaRecogida > :fechaFin)")
     List<Reserva> getReservasSolapadas(String matricula, String fechaInicio, String fechaFin, int reservaId);
+
+    @Query("SELECT * FROM reserva_table WHERE id = :id LIMIT 1")
+    Reserva getReservaById(int id);
 }

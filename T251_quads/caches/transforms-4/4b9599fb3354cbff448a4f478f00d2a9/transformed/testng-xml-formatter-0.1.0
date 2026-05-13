@@ -1,0 +1,5 @@
+io.cucumber.testngxmlformatter.EscapingXmlStreamWriter
+io.cucumber.testngxmlformatter.MessagesToTestngXmlWriter
+io.cucumber.testngxmlformatter.XmlReportData
+io.cucumber.testngxmlformatter.XmlReportWriter
+io.cucumber.testngxmlformatter.XmlReportWriter$1

@@ -1,0 +1,4 @@
+io.cucumber.junitxmlformatter.EscapingXmlStreamWriter
+io.cucumber.junitxmlformatter.MessagesToJunitXmlWriter
+io.cucumber.junitxmlformatter.XmlReportData
+io.cucumber.junitxmlformatter.XmlReportWriter

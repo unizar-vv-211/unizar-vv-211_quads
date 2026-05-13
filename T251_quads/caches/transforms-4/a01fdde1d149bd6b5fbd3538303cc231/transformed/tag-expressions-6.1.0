@@ -1,0 +1,12 @@
+io.cucumber.tagexpressions.Expression
+io.cucumber.tagexpressions.TagExpressionException
+io.cucumber.tagexpressions.TagExpressionParser
+io.cucumber.tagexpressions.TagExpressionParser$1
+io.cucumber.tagexpressions.TagExpressionParser$2
+io.cucumber.tagexpressions.TagExpressionParser$And
+io.cucumber.tagexpressions.TagExpressionParser$Assoc
+io.cucumber.tagexpressions.TagExpressionParser$Literal
+io.cucumber.tagexpressions.TagExpressionParser$Not
+io.cucumber.tagexpressions.TagExpressionParser$Or
+io.cucumber.tagexpressions.TagExpressionParser$TokenType
+io.cucumber.tagexpressions.TagExpressionParser$True

@@ -1,0 +1,15 @@
+io.cucumber.core.gherkin.messages.CucumberQuery
+io.cucumber.core.gherkin.messages.GherkinMessagesDataTableArgument
+io.cucumber.core.gherkin.messages.GherkinMessagesDataTableArgument$CellView
+io.cucumber.core.gherkin.messages.GherkinMessagesDataTableArgument$CellView$1
+io.cucumber.core.gherkin.messages.GherkinMessagesDocStringArgument
+io.cucumber.core.gherkin.messages.GherkinMessagesExample
+io.cucumber.core.gherkin.messages.GherkinMessagesExamples
+io.cucumber.core.gherkin.messages.GherkinMessagesFeature
+io.cucumber.core.gherkin.messages.GherkinMessagesFeatureParser
+io.cucumber.core.gherkin.messages.GherkinMessagesLocation
+io.cucumber.core.gherkin.messages.GherkinMessagesPickle
+io.cucumber.core.gherkin.messages.GherkinMessagesRule
+io.cucumber.core.gherkin.messages.GherkinMessagesScenario
+io.cucumber.core.gherkin.messages.GherkinMessagesScenarioOutline
+io.cucumber.core.gherkin.messages.GherkinMessagesStep

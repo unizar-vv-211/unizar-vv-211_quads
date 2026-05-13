@@ -1,0 +1,9 @@
+androidx.arch.core.executor.JunitTaskExecutorRule
+androidx.arch.core.executor.JunitTaskExecutorRule$1
+androidx.arch.core.executor.TaskExecutorWithFakeMainThread
+androidx.arch.core.executor.TaskExecutorWithFakeMainThread$LoggingThread
+androidx.arch.core.executor.testing.CountingTaskExecutorRule
+androidx.arch.core.executor.testing.CountingTaskExecutorRule$1
+androidx.arch.core.executor.testing.CountingTaskExecutorRule$CountingRunnable
+androidx.arch.core.executor.testing.InstantTaskExecutorRule
+androidx.arch.core.executor.testing.InstantTaskExecutorRule$1

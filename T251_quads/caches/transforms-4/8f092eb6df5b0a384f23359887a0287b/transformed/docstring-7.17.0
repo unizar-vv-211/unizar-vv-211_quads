@@ -1,0 +1,8 @@
+io.cucumber.docstring.ConversionRequired
+io.cucumber.docstring.CucumberDocStringException
+io.cucumber.docstring.DocString
+io.cucumber.docstring.DocString$DocStringConverter
+io.cucumber.docstring.DocStringType
+io.cucumber.docstring.DocStringType$Transformer
+io.cucumber.docstring.DocStringTypeRegistry
+io.cucumber.docstring.DocStringTypeRegistryDocStringConverter

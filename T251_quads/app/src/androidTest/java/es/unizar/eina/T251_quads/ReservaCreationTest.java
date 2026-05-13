@@ -144,7 +144,7 @@ public class ReservaCreationTest {
                 resultado.get().contains("BASECR01"));
     }
 
-    // Prueba de particiones de equivalencia para el nombre del cliente (PE-01 a PE-05)
+    // Prueba de particiones de equivalencia para el nombre del cliente 
     @Test
     public void testClienteValidationPartitions() {
         UnitTests helper = new UnitTests(quadRepository, reservaRepository);

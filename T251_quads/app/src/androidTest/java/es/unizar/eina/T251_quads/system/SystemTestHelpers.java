@@ -102,7 +102,7 @@ public class SystemTestHelpers {
         onView(withId(R.id.edit_cascos)).perform(replaceText(cascos), closeSoftKeyboard());
 
         // Solo pulsamos el CheckBox si hemos especificado una matrícula (Creación)
-        // Si pasamos null (Edición), dejamos los que ya estén marcados.
+        // Si pasamos null, dejamos los que ya estén marcados.
         if (matriculaQuad != null) {
             onView(withText(containsString(matriculaQuad))).perform(scrollTo(), click());
         }

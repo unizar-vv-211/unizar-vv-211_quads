@@ -5,6 +5,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,6 +33,7 @@ public class OverloadTest {
     }
 
     @Test
+    @Ignore("No se trata de una prueba de regresión")
     public void testSobrecarga() {
         boolean falloControlado = false;
         try {

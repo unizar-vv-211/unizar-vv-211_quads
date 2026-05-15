@@ -1,7 +1,9 @@
 package es.unizar.eina.T251_quads;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -40,7 +42,7 @@ public class QuadSmokeTest {
 
             // Insertar un nuevo quad
             long insertId = activity.getQuadRepository().insert(testQuad);
-            assertTrue("La inserción en la BD ha fallado", insertId >= 0);
+            assertThat("La inserción en la BD ha fallado", insertId, is(greaterThanOrEqualTo(0L)));
 
             // Comprobar que el nuevo número es una unidad mayor
             int quadsFinales = activity.getQuadRepository().getNumQuads();

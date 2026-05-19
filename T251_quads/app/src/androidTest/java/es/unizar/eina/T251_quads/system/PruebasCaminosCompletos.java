@@ -22,6 +22,20 @@ public class PruebasCaminosCompletos {
     @Rule
     public ActivityScenarioRule<MainActivity> activityRule = new ActivityScenarioRule<>(MainActivity.class);
 
+    @org.junit.Before
+    public void limpiarAntes() {
+        android.app.Application app = androidx.test.core.app.ApplicationProvider.getApplicationContext();
+        es.unizar.eina.T251_quads.database.QuadRepository quadRepo = new es.unizar.eina.T251_quads.database.QuadRepository(app);
+        es.unizar.eina.T251_quads.database.ReservaRepository reservaRepo = new es.unizar.eina.T251_quads.database.ReservaRepository(app);
+        java.util.concurrent.CountDownLatch latch = new java.util.concurrent.CountDownLatch(1);
+        new Thread(() -> {
+            reservaRepo.deleteAll();
+            quadRepo.deleteAll();
+            latch.countDown();
+        }).start();
+        try { latch.await(5, java.util.concurrent.TimeUnit.SECONDS); } catch (InterruptedException e) {}
+    }
+
     // Motor lector del vector
     private void recorrerCamino(int[] camino) {
         for (int i = 0; i < camino.length; i++) {
@@ -182,48 +196,20 @@ public class PruebasCaminosCompletos {
 
     @org.junit.After
     public void limpiarTodoAlTerminar() {
-        System.out.println(">>> INICIANDO LIMPIEZA DE LA BASE DE DATOS...");
-
-        // 1. Intentamos vaciar las Reservas primero (por el tema de claves foráneas)
-        try {
-            irAReservas();
-            for (int i = 0; i < 20; i++) {
-                // Si pulsarEliminarEnLista devuelve false, rompemos el bucle instantáneamente
-                if (!pulsarEliminarEnLista(0)) {
-                    break;
-                }
-            }
-        } catch (Throwable e) {
-            System.out.println("Lista de reservas ya limpia o inaccesible.");
-        }
-
-        // Aseguramos volver al menú principal
-        try {
-            volverAtras();
-        } catch (Throwable e) {
-        }
-
-        // 2. Vaciamos los Quads
-        try {
-            irAQuads();
-            for (int i = 0; i < 20; i++) {
-                // Si pulsarEliminarEnLista devuelve false, rompemos el bucle instantáneamente
-                if (!pulsarEliminarEnLista(0)) {
-                    break;
-                }
-            }
-        } catch (Throwable e) {
-            System.out.println("Lista de quads ya limpia o inaccesible.");
-        }
-
-        // Volvemos al menú de inicio para dejar la app lista para el siguiente test
-        try {
-            volverAtras();
-        } catch (Throwable e) {
-        }
+        android.app.Application app = androidx.test.core.app.ApplicationProvider.getApplicationContext();
+        es.unizar.eina.T251_quads.database.QuadRepository quadRepo = new es.unizar.eina.T251_quads.database.QuadRepository(app);
+        es.unizar.eina.T251_quads.database.ReservaRepository reservaRepo = new es.unizar.eina.T251_quads.database.ReservaRepository(app);
+        java.util.concurrent.CountDownLatch latch = new java.util.concurrent.CountDownLatch(1);
+        new Thread(() -> {
+            reservaRepo.deleteAll();
+            quadRepo.deleteAll();
+            latch.countDown();
+        }).start();
+        try { latch.await(5, java.util.concurrent.TimeUnit.SECONDS); } catch (InterruptedException e) {}
 
         // Reseteamos los contadores estáticos para la próxima prueba
         UtilidadesPruebas.generadorMatriculas = 1;
-        System.out.println(">>> LIMPIEZA COMPLETA.");
+        UtilidadesPruebas.generadorClientes = 10;
+        UtilidadesPruebas.ultimaTransicion = -1;
     }
 }

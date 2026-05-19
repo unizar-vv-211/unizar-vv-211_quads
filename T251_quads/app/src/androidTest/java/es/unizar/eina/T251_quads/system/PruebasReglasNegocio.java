@@ -23,6 +23,20 @@ public class PruebasReglasNegocio {
     @Rule
     public ActivityScenarioRule<MainActivity> activityRule = new ActivityScenarioRule<>(MainActivity.class);
 
+    @org.junit.Before
+    public void limpiarAntes() {
+        android.app.Application app = androidx.test.core.app.ApplicationProvider.getApplicationContext();
+        es.unizar.eina.T251_quads.database.QuadRepository quadRepo = new es.unizar.eina.T251_quads.database.QuadRepository(app);
+        es.unizar.eina.T251_quads.database.ReservaRepository reservaRepo = new es.unizar.eina.T251_quads.database.ReservaRepository(app);
+        java.util.concurrent.CountDownLatch latch = new java.util.concurrent.CountDownLatch(1);
+        new Thread(() -> {
+            reservaRepo.deleteAll();
+            quadRepo.deleteAll();
+            latch.countDown();
+        }).start();
+        try { latch.await(5, java.util.concurrent.TimeUnit.SECONDS); } catch (InterruptedException e) {}
+    }
+
     /**
      * PRUEBA 1: Mantenimiento de Precios (Precio Congelado)
      * Si el precio de un Quad cambia en el futuro, las reservas antiguas no deben
@@ -150,44 +164,20 @@ public class PruebasReglasNegocio {
 
     @org.junit.After
     public void limpiarTodoAlTerminar() {
-        System.out.println(">>> INICIANDO LIMPIEZA DE LA BASE DE DATOS...");
-
-        // 1. Intentamos vaciar las Reservas primero (por el tema de claves foráneas)
-        try {
-            irAReservas();
-            for (int i = 0; i < 20; i++) {
-                if (!pulsarEliminarEnLista(0)) {
-                    break;
-                }
-            }
-        } catch (Throwable e) {
-            System.out.println("Lista de reservas ya limpia o inaccesible.");
-        }
-
-        try {
-            volverAtras();
-        } catch (Throwable e) {
-        }
-
-        // 2. Vaciamos los Quads
-        try {
-            irAQuads();
-            for (int i = 0; i < 20; i++) {
-                if (!pulsarEliminarEnLista(0)) {
-                    break;
-                }
-            }
-        } catch (Throwable e) {
-            System.out.println("Lista de quads ya limpia o inaccesible.");
-        }
-
-        try {
-            volverAtras();
-        } catch (Throwable e) {
-        }
+        android.app.Application app = androidx.test.core.app.ApplicationProvider.getApplicationContext();
+        es.unizar.eina.T251_quads.database.QuadRepository quadRepo = new es.unizar.eina.T251_quads.database.QuadRepository(app);
+        es.unizar.eina.T251_quads.database.ReservaRepository reservaRepo = new es.unizar.eina.T251_quads.database.ReservaRepository(app);
+        java.util.concurrent.CountDownLatch latch = new java.util.concurrent.CountDownLatch(1);
+        new Thread(() -> {
+            reservaRepo.deleteAll();
+            quadRepo.deleteAll();
+            latch.countDown();
+        }).start();
+        try { latch.await(5, java.util.concurrent.TimeUnit.SECONDS); } catch (InterruptedException e) {}
 
         // Reseteamos los contadores estáticos
         UtilidadesPruebas.generadorMatriculas = 1;
-        System.out.println(">>> LIMPIEZA COMPLETA.");
+        UtilidadesPruebas.generadorClientes = 10;
+        UtilidadesPruebas.ultimaTransicion = -1;
     }
 }

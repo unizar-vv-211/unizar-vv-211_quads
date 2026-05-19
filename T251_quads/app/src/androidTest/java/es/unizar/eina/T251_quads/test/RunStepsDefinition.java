@@ -644,7 +644,7 @@ public class RunStepsDefinition {
     public void envio_por_sms_la_reserva_de(String cliente) {
         String mensaje = "Reserva confirmada para " + cliente + "\n"
                 + "Precio total: " + lastReservaPrecioTotal;
-        CapturingContext context = new CapturingContext(ApplicationProvider.getApplicationContext());
+        CapturingActivity context = new CapturingActivity();
         new SMSImplementor(context).send(lastReservaTelefono, mensaje);
         lastSendIntent = context.startedIntent;
     }
@@ -661,12 +661,8 @@ public class RunStepsDefinition {
         assertTrue(smsBody.contains(precioTotal));
     }
 
-    private static class CapturingContext extends ContextWrapper {
+    private static class CapturingActivity extends android.app.Activity {
         private Intent startedIntent;
-
-        CapturingContext(Context base) {
-            super(base);
-        }
 
         @Override
         public void startActivity(Intent intent) {

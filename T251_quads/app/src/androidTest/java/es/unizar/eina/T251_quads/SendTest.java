@@ -25,7 +25,7 @@ public class SendTest {
 
     @Test
     public void testSMSImplementorCreatesSmsIntent() {
-        CapturingContext activity = new CapturingContext(ApplicationProvider.getApplicationContext());
+        CapturingActivity activity = new CapturingActivity();
 
         new SMSImplementor(activity).send(PHONE, MESSAGE);
 
@@ -34,7 +34,7 @@ public class SendTest {
 
     @Test
     public void testSendAbstractionSmsDelegatesToSmsImplementor() {
-        CapturingContext activity = new CapturingContext(ApplicationProvider.getApplicationContext());
+        CapturingActivity activity = new CapturingActivity();
 
         SendAbstraction sendAbstraction = new SendAbstractionImpl(activity, "sms");
         sendAbstraction.send(PHONE, MESSAGE);
@@ -53,12 +53,8 @@ public class SendTest {
                 MESSAGE, intent.getStringExtra("sms_body"));
     }
 
-    private static class CapturingContext extends ContextWrapper {
+    private static class CapturingActivity extends android.app.Activity {
         private Intent startedIntent;
-
-        CapturingContext(Context base) {
-            super(base);
-        }
 
         @Override
         public void startActivity(Intent intent) {

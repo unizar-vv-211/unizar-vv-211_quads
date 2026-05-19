@@ -5,6 +5,8 @@ import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.replaceText;
+import static androidx.test.espresso.action.ViewActions.clearText;
+import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
@@ -127,8 +129,8 @@ public class UtilidadesPruebas {
             String cascos, String matriculaQuad) {
         onView(withId(R.id.edit_cliente)).perform(replaceText(cliente), closeSoftKeyboard());
         onView(withId(R.id.edit_telefono)).perform(replaceText(telefono), closeSoftKeyboard());
-        onView(withId(R.id.edit_fecha_recogida)).perform(replaceText(fRecogida), closeSoftKeyboard());
-        onView(withId(R.id.edit_fecha_devolucion)).perform(replaceText(fDevolucion), closeSoftKeyboard());
+        onView(withId(R.id.edit_fecha_recogida)).perform(clearText(), typeText(fRecogida), closeSoftKeyboard());
+        onView(withId(R.id.edit_fecha_devolucion)).perform(clearText(), typeText(fDevolucion), closeSoftKeyboard());
         onView(withId(R.id.edit_cascos)).perform(replaceText(cascos), closeSoftKeyboard());
         if (matriculaQuad != null) {
             onView(withText(containsString(matriculaQuad))).perform(closeSoftKeyboard(), click());
@@ -249,7 +251,7 @@ public class UtilidadesPruebas {
                 break;
             // T21: Guardar reserva con datos realistas
             case 21:
-                int anioReserva = 2030 + generadorClientes;
+                int anioReserva = 2100 + generadorClientes;
                 String fechaIda = "10-05-" + anioReserva;
                 String fechaVuelta = "15-05-" + anioReserva;
 
@@ -268,6 +270,7 @@ public class UtilidadesPruebas {
                 try {
                     rellenarYGuardarReserva(nombreCliente, "123456789", fechaIda, fechaVuelta, "1",
                             quadParaMarcar);
+                    generadorClientes++;
                 } catch (Exception e) {
                     System.out.println("Fallo al guardar Reserva en T21.");
                     try {

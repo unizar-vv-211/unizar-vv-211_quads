@@ -1,10 +1,10 @@
-Feature: Gestion del Inventario de Quads
+Feature: Gestion del inventario de quads
   Como empleado de la tienda de alquiler
   Quiero mantener actualizado el catalogo de quads
   Para poder asignarlos posteriormente a las reservas de los clientes
 
-  # SCENARIO TESTING - Particiones de Equivalencia Válidas (Pruebas 1 y 2)
-  Scenario Outline: Crear quad con datos validos
+  # CPA-Q-01, CPA-Q-02
+  Scenario Outline: Crear quad valido
     Given Estoy en la pantalla principal de Quads
     When Hago clic en crear un quad
     And Introduzco "<matricula>" como matricula
@@ -15,12 +15,12 @@ Feature: Gestion del Inventario de Quads
     Then Deberia ver "<matricula>" en la lista
 
     Examples:
-      | matricula | tipo      | precio | descripcion                            |
-      | AAA1111   | Monoplaza | 10.0   | Quad validacion monoplaza              |
-      | AAA1112   | Biplaza   | 10.0   | Quad validacion biplaza                |
+      | matricula | tipo      | precio | descripcion               |
+      | AAA1111   | Monoplaza | 10.0   | Quad valido monoplaza     |
+      | AAA1112   | Biplaza   | 10.0   | Quad valido biplaza       |
 
-  # SCENARIO TESTING - Particiones de Equivalencia Inválidas (Pruebas 3, 4, 5, 6, 7)
-  Scenario Outline: Rechazo de quads con datos invalidos
+  # CPA-Q-03, CPA-Q-04, CPA-Q-05, CPA-Q-06, CPA-Q-07
+  Scenario Outline: Rechazar quad con datos invalidos
     Given Estoy en la pantalla principal de Quads
     When Hago clic en crear un quad
     And Introduzco "<matricula>" como matricula
@@ -31,9 +31,9 @@ Feature: Gestion del Inventario de Quads
     Then El sistema debe mantenerme en la pantalla de creacion de Quads
 
     Examples:
-      | matricula | tipo      | precio | descripcion                     |
-      | 1111AAA   | Monoplaza | 10.0   | Prueba formato invalido         |
-      |           | Monoplaza | 10.0   | Prueba matricula vacia          |
-      | AAA1113   | Monoplaza | -10.0  | Prueba precio negativo          |
-      | AAA1114   | Monoplaza |        | Prueba precio vacio             |
-      | AAA1115   | Monoplaza | 10.0   |                                 |
+      | matricula | tipo      | precio | descripcion             |
+      | 1111AAA   | Monoplaza | 10.0   | Formato invalido        |
+      |           | Monoplaza | 10.0   | Matricula vacia         |
+      | AAA1113   | Monoplaza | -10.0  | Precio negativo         |
+      | AAA1114   | Monoplaza |        | Precio vacio            |
+      | AAA1115   | Monoplaza | 10.0   |                         |

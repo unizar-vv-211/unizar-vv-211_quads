@@ -9,12 +9,15 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import es.unizar.eina.T251_quads.MainActivity;
 import es.unizar.eina.T251_quads.R;
-import es.unizar.eina.T251_quads.send.SMSImplementor;
+import android.app.Activity;
+import android.app.Application;
+import android.app.Instrumentation;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
+import android.content.IntentFilter;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.NoMatchingViewException;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static androidx.test.espresso.Espresso.onView;
@@ -49,6 +52,9 @@ public class RunStepsDefinition {
     private String lastReservaCliente;
     private String lastReservaTelefono;
     private String lastReservaPrecioTotal;
+    private String lastReservaFechaRecogida;
+    private String lastReservaFechaDevolucion;
+    private String lastReservaQuad;
     private Intent lastSendIntent;
 
     private void runOnBackgroundAndWait(Runnable dbOperation) {
@@ -463,7 +469,7 @@ public class RunStepsDefinition {
     @When("Selecciono los quads {string}")
     public void selecciono_los_quads(String quad) {
         if (quad != null && !quad.isEmpty()) {
-            // Busca el CheckBox dinámico del RecyclerView que contiene la matrícula
+            // Busca el CheckBox dinámico que contiene la matrícula
             onView(withText(org.hamcrest.Matchers.containsString(quad)))
                     .perform(androidx.test.espresso.action.ViewActions.scrollTo(), click());
         }
@@ -555,7 +561,7 @@ public class RunStepsDefinition {
         java.util.List<String> quads = new java.util.ArrayList<>();
         quads.add(quad);
 
-        // Ejecutar en hilo secundario usando tu método seguro
+        // Ejecutar en hilo secundario 
         runOnBackgroundAndWait(() -> repository.insert(nuevaReserva, quads));
     }
 
@@ -590,7 +596,7 @@ public class RunStepsDefinition {
     @Then("La reserva de {string} debe seguir mostrando un precio total de {string}")
     public void verifico_precio_congelado(String cliente, String precioTotalEsperado) {
         // 1. Añadimos una pequeña pausa para asegurar que 
-        // han terminado de cargar y renderizar los datos en el RecyclerView.
+        // han terminado de cargar y renderizar los datos.
         try {
             Thread.sleep(1500);
         } catch (InterruptedException e) {
@@ -635,22 +641,57 @@ public class RunStepsDefinition {
 
     @Given("Existe una reserva de envio para {string} con telefono {string} y precio total {string}")
     public void existe_reserva_envio(String cliente, String telefono, String precioTotal) {
+        Application application = ApplicationProvider.getApplicationContext();
+        es.unizar.eina.T251_quads.database.QuadRepository quadRepository =
+                new es.unizar.eina.T251_quads.database.QuadRepository(application);
+        es.unizar.eina.T251_quads.database.ReservaRepository reservaRepository =
+                new es.unizar.eina.T251_quads.database.ReservaRepository(application);
+
         lastReservaCliente = cliente;
         lastReservaTelefono = telefono;
         lastReservaPrecioTotal = precioTotal;
+        lastReservaFechaRecogida = "2026-05-10";
+        lastReservaFechaDevolucion = "2026-05-11";
+        lastReservaQuad = "SMS0001";
+
+        runOnBackgroundAndWait(() -> {
+            quadRepository.insert(new es.unizar.eina.T251_quads.database.Quad(
+                    lastReservaQuad,
+                    "Monoplaza",
+                    50.0f,
+                    "Quad para envío SMS"));
+            reservaRepository.insert(new es.unizar.eina.T251_quads.database.Reserva(
+                    cliente,
+                    telefono,
+                    lastReservaFechaRecogida,
+                    lastReservaFechaDevolucion,
+                    1,
+                    Double.parseDouble(precioTotal)), Arrays.asList(lastReservaQuad));
+        });
+        waitForUi();
     }
 
     @When("Envio por SMS la reserva de {string}")
     public void envio_por_sms_la_reserva_de(String cliente) {
-        String mensaje = "Reserva confirmada para " + cliente + "\n"
-                + "Precio total: " + lastReservaPrecioTotal;
-        CapturingActivity context = new CapturingActivity();
-        new SMSImplementor(context).send(lastReservaTelefono, mensaje);
-        lastSendIntent = context.startedIntent;
+        Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
+        CapturingActivityMonitor monitor = new CapturingActivityMonitor();
+        instrumentation.addMonitor(monitor);
+
+        try {
+            onView(withId(R.id.card_reservas)).perform(click());
+            waitForUi();
+            onView(withId(R.id.recyclerview))
+                    .perform(actionOnItem(hasDescendant(withText(containsString(cliente))), click()));
+            onView(withText("Enviar por SMS")).perform(click());
+            instrumentation.waitForMonitorWithTimeout(monitor, 5000);
+            lastSendIntent = monitor.getStartedIntent();
+        } finally {
+            instrumentation.removeMonitor(monitor);
+        }
     }
 
-    @Then("Se debe generar un mensaje de reserva con precio total {string}")
-    public void se_debe_generar_mensaje_con_precio_total(String precioTotal) {
+    @Then("Se debe generar un SMS con los datos de la reserva")
+    public void se_debe_generar_sms_con_datos_reserva() {
         assertNotNull(lastSendIntent);
         assertEquals(Intent.ACTION_VIEW, lastSendIntent.getAction());
         assertNotNull(lastSendIntent.getData());
@@ -658,15 +699,29 @@ public class RunStepsDefinition {
         String smsBody = lastSendIntent.getStringExtra("sms_body");
         assertNotNull(smsBody);
         assertTrue(smsBody.contains(lastReservaCliente));
-        assertTrue(smsBody.contains(precioTotal));
+        assertTrue(smsBody.contains(lastReservaFechaRecogida));
+        assertTrue(smsBody.contains(lastReservaFechaDevolucion));
+        assertTrue(smsBody.contains("Cascos: 1"));
+        assertTrue(smsBody.contains(lastReservaQuad));
     }
 
-    private static class CapturingActivity extends android.app.Activity {
+    private static class CapturingActivityMonitor extends Instrumentation.ActivityMonitor {
         private Intent startedIntent;
 
+        CapturingActivityMonitor() {
+            super(new IntentFilter(Intent.ACTION_VIEW),
+                    new Instrumentation.ActivityResult(Activity.RESULT_OK, null),
+                    true);
+        }
+
         @Override
-        public void startActivity(Intent intent) {
+        public Instrumentation.ActivityResult onStartActivity(Intent intent) {
             startedIntent = intent;
+            return new Instrumentation.ActivityResult(Activity.RESULT_OK, null);
+        }
+
+        Intent getStartedIntent() {
+            return startedIntent;
         }
     }
 }

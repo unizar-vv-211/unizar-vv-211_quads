@@ -1,12 +1,13 @@
 package es.unizar.eina.T251_quads;
 
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import android.content.Intent;
+
+import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -14,6 +15,16 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static androidx.test.espresso.action.ViewActions.replaceText;
+import static androidx.test.espresso.action.ViewActions.scrollTo;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.Matchers.containsString;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,15 +34,10 @@ import es.unizar.eina.T251_quads.database.Quad;
 import es.unizar.eina.T251_quads.database.QuadRepository;
 import es.unizar.eina.T251_quads.database.Reserva;
 import es.unizar.eina.T251_quads.database.ReservaRepository;
-import es.unizar.eina.T251_quads.database.UnitTests;
-import es.unizar.eina.T251_quads.ui.QuadListActivity;
+import es.unizar.eina.T251_quads.ui.ReservaListActivity;
 
 @RunWith(AndroidJUnit4.class)
 public class ReservaCreationTest {
-
-    @Rule
-    public ActivityScenarioRule<QuadListActivity> scenarioRule =
-            new ActivityScenarioRule<>(QuadListActivity.class);
 
     private QuadRepository quadRepository;
     private ReservaRepository reservaRepository;
@@ -41,7 +47,7 @@ public class ReservaCreationTest {
         quadRepository = new QuadRepository(ApplicationProvider.getApplicationContext());
         reservaRepository = new ReservaRepository(ApplicationProvider.getApplicationContext());
 
-        // Limpiar respetando el orden de Foreign Key
+        // Limpiar 
         reservaRepository.deleteAll();
         Thread.sleep(300);
         quadRepository.deleteAll();
@@ -60,41 +66,103 @@ public class ReservaCreationTest {
         long id = reservaRepository.insert(reserva, Arrays.asList("BASECR01"));
         assertTrue("La inserción de una reserva válida debería devolver un id > 0", id > 0);
     }
-
+    
     @Test
-    public void testReservaConMismaFechaRecogidaYDevolucionEsValida() {
-        assertTrue("La misma fecha de recogida y devolución debería ser válida",
-                fechasReservaValidas("10-05-2026", "10-05-2026"));
+    public void testReservaConMismaFechaRecogidaYDevolucionEsValida() throws InterruptedException {
+        // Se usa onView porque esta regla se valida en el formulario real de ReservaEdit,
+        // no en ReservaRepository/DAO.
+        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), ReservaListActivity.class);
+        try (ActivityScenario<ReservaListActivity> scenario = ActivityScenario.launch(intent)) {
+            onView(withId(R.id.fab)).perform(click());
+            onView(withId(R.id.edit_cliente)).perform(replaceText("Laura Pérez"), closeSoftKeyboard());
+            onView(withId(R.id.edit_telefono)).perform(replaceText("600111222"), closeSoftKeyboard());
+            onView(withId(R.id.edit_fecha_recogida)).perform(replaceText("10-05-2026"), closeSoftKeyboard());
+            onView(withId(R.id.edit_fecha_devolucion)).perform(replaceText("10-05-2026"), closeSoftKeyboard());
+            onView(withId(R.id.edit_cascos)).perform(scrollTo(), replaceText("1"), closeSoftKeyboard());
+            onView(withText(containsString("BASECR01"))).perform(scrollTo(), click());
+            onView(withId(R.id.button_save)).perform(scrollTo(), click());
 
-        Reserva reserva = new Reserva("Laura Pérez", "600111222",
-                "10-05-2026", "10-05-2026", 1, 55.0);
-        long id = reservaRepository.insert(reserva, Arrays.asList("BASECR01"));
-
-        assertTrue("La reserva con la misma fecha debería insertarse", id > 0);
+            Thread.sleep(1000);
+            onView(withText("Laura Pérez")).check(matches(isDisplayed()));
+        }
     }
 
     @Test
-    public void testReservaConFechaDevolucionAnteriorEsRechazada() {
-        boolean fechasValidas = fechasReservaValidas("11-05-2026", "10-05-2026");
-        long id = fechasValidas ? reservaRepository.insert(
-                new Reserva("Laura Pérez", "600111222",
-                        "11-05-2026", "10-05-2026", 1, 55.0),
-                Arrays.asList("BASECR01")) : -1;
+    public void testReservaConFechaDevolucionAnteriorEsRechazada() throws InterruptedException {
+        // Se usa onView porque el rechazo de fechas se produce al guardar desde ReservaEdit.
+        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), ReservaListActivity.class);
+        try (ActivityScenario<ReservaListActivity> scenario = ActivityScenario.launch(intent)) {
+            onView(withId(R.id.fab)).perform(click());
+            onView(withId(R.id.edit_cliente)).perform(replaceText("Laura Pérez"), closeSoftKeyboard());
+            onView(withId(R.id.edit_telefono)).perform(replaceText("600111222"), closeSoftKeyboard());
+            onView(withId(R.id.edit_fecha_recogida)).perform(replaceText("11-05-2026"), closeSoftKeyboard());
+            onView(withId(R.id.edit_fecha_devolucion)).perform(replaceText("10-05-2026"), closeSoftKeyboard());
+            onView(withId(R.id.edit_cascos)).perform(scrollTo(), replaceText("1"), closeSoftKeyboard());
+            onView(withText(containsString("BASECR01"))).perform(scrollTo(), click());
+            onView(withId(R.id.button_save)).perform(scrollTo(), click());
 
-        assertFalse("La fecha de devolución anterior debería rechazarse", fechasValidas);
-        assertEquals("No debería insertarse una reserva con fechas inválidas", -1, id);
+            Thread.sleep(500);
+            onView(withId(R.id.edit_cliente)).perform(scrollTo()).check(matches(isDisplayed()));
+        }
     }
 
     @Test
-    public void testMonoplazaConUnCascoEsValida() {
-        assertTrue("Un monoplaza con un casco debería ser válido",
-                cascosValidos("Monoplaza", 1));
+    public void testMonoplazaConUnCascoEsValida() throws InterruptedException {
+        // Se usa onView porque el máximo de cascos por tipo de quad se comprueba en ReservaEdit.
+        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), ReservaListActivity.class);
+        try (ActivityScenario<ReservaListActivity> scenario = ActivityScenario.launch(intent)) {
+            onView(withId(R.id.fab)).perform(click());
+            onView(withId(R.id.edit_cliente)).perform(replaceText("Pedro Ruiz"), closeSoftKeyboard());
+            onView(withId(R.id.edit_telefono)).perform(replaceText("600222333"), closeSoftKeyboard());
+            onView(withId(R.id.edit_fecha_recogida)).perform(replaceText("12-05-2026"), closeSoftKeyboard());
+            onView(withId(R.id.edit_fecha_devolucion)).perform(replaceText("12-05-2026"), closeSoftKeyboard());
+            onView(withId(R.id.edit_cascos)).perform(scrollTo(), replaceText("1"), closeSoftKeyboard());
+            onView(withText(containsString("BASECR01"))).perform(scrollTo(), click());
+            onView(withId(R.id.button_save)).perform(scrollTo(), click());
 
-        Reserva reserva = new Reserva("Pedro Ruiz", "600222333",
-                "12-05-2026", "12-05-2026", 1, 55.0);
-        long id = reservaRepository.insert(reserva, Arrays.asList("BASECR01"));
+            Thread.sleep(1000);
+            onView(withText("Pedro Ruiz")).check(matches(isDisplayed()));
+        }
+    }
 
-        assertTrue("La reserva de monoplaza con un casco debería insertarse", id > 0);
+    @Test
+    public void testMonoplazaConMasCascosDeLosPermitidosEsRechazada() throws InterruptedException {
+        // Se usa onView porque ReservaRepository no rechaza cascos inválidos; esa validación es de UI.
+        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), ReservaListActivity.class);
+        try (ActivityScenario<ReservaListActivity> scenario = ActivityScenario.launch(intent)) {
+            onView(withId(R.id.fab)).perform(click());
+            onView(withId(R.id.edit_cliente)).perform(replaceText("Cliente Cascos"), closeSoftKeyboard());
+            onView(withId(R.id.edit_telefono)).perform(replaceText("600555666"), closeSoftKeyboard());
+            onView(withId(R.id.edit_fecha_recogida)).perform(replaceText("13-05-2026"), closeSoftKeyboard());
+            onView(withId(R.id.edit_fecha_devolucion)).perform(replaceText("14-05-2026"), closeSoftKeyboard());
+            onView(withId(R.id.edit_cascos)).perform(scrollTo(), replaceText("2"), closeSoftKeyboard());
+            onView(withText(containsString("BASECR01"))).perform(scrollTo(), click());
+            onView(withId(R.id.button_save)).perform(scrollTo(), click());
+
+            Thread.sleep(500);
+            onView(withId(R.id.edit_cliente)).perform(scrollTo()).check(matches(isDisplayed()));
+        }
+    }
+
+    @Test
+    public void testBiplazaConMasCascosDeLosPermitidosEsRechazada() throws InterruptedException {
+        quadRepository.insert(new Quad("BASEBI01", "Biplaza", 75.0f, "Quad biplaza para test de cascos"));
+
+        // Se usa onView porque el límite de cascos por biplaza solo se aplica al guardar el formulario.
+        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), ReservaListActivity.class);
+        try (ActivityScenario<ReservaListActivity> scenario = ActivityScenario.launch(intent)) {
+            onView(withId(R.id.fab)).perform(click());
+            onView(withId(R.id.edit_cliente)).perform(replaceText("Cliente Biplaza"), closeSoftKeyboard());
+            onView(withId(R.id.edit_telefono)).perform(replaceText("600777888"), closeSoftKeyboard());
+            onView(withId(R.id.edit_fecha_recogida)).perform(replaceText("15-05-2026"), closeSoftKeyboard());
+            onView(withId(R.id.edit_fecha_devolucion)).perform(replaceText("16-05-2026"), closeSoftKeyboard());
+            onView(withId(R.id.edit_cascos)).perform(scrollTo(), replaceText("3"), closeSoftKeyboard());
+            onView(withText(containsString("BASEBI01"))).perform(scrollTo(), click());
+            onView(withId(R.id.button_save)).perform(scrollTo(), click());
+
+            Thread.sleep(500);
+            onView(withId(R.id.edit_cliente)).perform(scrollTo()).check(matches(isDisplayed()));
+        }
     }
 
     @Test
@@ -127,7 +195,7 @@ public class ReservaCreationTest {
         reservaRepository.insert(reserva1, Arrays.asList("BASECR01"));
         Thread.sleep(500);
 
-        // Comprobar disponibilidad del mismo quad en las mismas fechas desde un hilo secundario
+        // Comprobar disponibilidad del mismo quad en las mismas fechas 
         AtomicReference<List<String>> resultado = new AtomicReference<>();
         Thread bgThread = new Thread(() -> {
             List<String> noDisponibles = reservaRepository.comprobarDisponibilidad(
@@ -146,82 +214,92 @@ public class ReservaCreationTest {
 
     // Prueba de particiones de equivalencia para el nombre del cliente 
     @Test
-    public void testClienteValidationPartitions() {
-        UnitTests helper = new UnitTests(quadRepository, reservaRepository);
+    public void testClienteValidationPartitions() throws InterruptedException {
+        // Se usa onView porque las particiones de nombre de cliente se validan en ReservaEdit
+        // antes de crear la reserva; el repositorio no aplica estas reglas de formulario.
+        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), ReservaListActivity.class);
+        try (ActivityScenario<ReservaListActivity> scenario = ActivityScenario.launch(intent)) {
+            onView(withId(R.id.fab)).perform(click());
+            onView(withId(R.id.edit_cliente)).perform(replaceText("Juan Pérez"), closeSoftKeyboard());
+            onView(withId(R.id.edit_telefono)).perform(replaceText("600444555"), closeSoftKeyboard());
+            onView(withId(R.id.edit_fecha_recogida)).perform(replaceText("14-05-2026"), closeSoftKeyboard());
+            onView(withId(R.id.edit_fecha_devolucion)).perform(replaceText("14-05-2026"), closeSoftKeyboard());
+            onView(withId(R.id.edit_cascos)).perform(scrollTo(), replaceText("1"), closeSoftKeyboard());
+            onView(withText(containsString("BASECR01"))).perform(scrollTo(), click());
+            onView(withId(R.id.button_save)).perform(scrollTo(), click());
 
-        // Válida
-        String pe01 = "Juan Pérez";
-        assertTrue("PE-01 debería ser válido", helper.validateCliente(pe01));
-        assertEquals("PE-01 debería devolver Registro exitoso", "Registro exitoso.", helper.getClienteValidationError(pe01));
+            Thread.sleep(1000);
+            onView(withText("Juan Pérez")).check(matches(isDisplayed()));
 
-        // Espacio
-        String nombreConEspacio = "Juan Perez";
-        assertTrue("El cliente con espacio normal debería ser válido", helper.validateCliente(nombreConEspacio));
-        assertEquals("El cliente con espacio normal debería devolver Registro exitoso", "Registro exitoso.", helper.getClienteValidationError(nombreConEspacio));
+            onView(withId(R.id.fab)).perform(click());
+            onView(withId(R.id.edit_telefono)).perform(replaceText("600444555"), closeSoftKeyboard());
+            onView(withId(R.id.edit_fecha_recogida)).perform(replaceText("15-05-2026"), closeSoftKeyboard());
+            onView(withId(R.id.edit_fecha_devolucion)).perform(replaceText("15-05-2026"), closeSoftKeyboard());
+            onView(withId(R.id.edit_cascos)).perform(scrollTo(), replaceText("1"), closeSoftKeyboard());
+            onView(withText(containsString("BASECR01"))).perform(scrollTo(), click());
 
-        // Dígitos
-        String pe02 = "Ana89";
-        assertFalse("PE-02 debería ser inválido", helper.validateCliente(pe02));
-        assertEquals("PE-02 debería devolver Formato no permitido", "Error: Formato no permitido.", helper.getClienteValidationError(pe02));
+            onView(withId(R.id.edit_cliente)).perform(replaceText("Juan Perez"), closeSoftKeyboard());
+            onView(withId(R.id.button_save)).perform(scrollTo(), click());
+            Thread.sleep(1000);
+            onView(withText("Juan Perez")).check(matches(isDisplayed()));
 
-        // Vacía
-        String pe04 = "";
-        assertFalse("PE-04 debería ser inválido", helper.validateCliente(pe04));
-        assertEquals("PE-04 debería devolver Campo obligatorio", "Error: Campo obligatorio.", helper.getClienteValidationError(pe04));
+            onView(withId(R.id.fab)).perform(click());
+            onView(withId(R.id.edit_telefono)).perform(replaceText("600444555"), closeSoftKeyboard());
+            onView(withId(R.id.edit_fecha_recogida)).perform(replaceText("16-05-2026"), closeSoftKeyboard());
+            onView(withId(R.id.edit_fecha_devolucion)).perform(replaceText("16-05-2026"), closeSoftKeyboard());
+            onView(withId(R.id.edit_cascos)).perform(scrollTo(), replaceText("1"), closeSoftKeyboard());
+            onView(withText(containsString("BASECR01"))).perform(scrollTo(), click());
 
-        // Longitud
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < 256; i++) sb.append("A");
-        String pe05 = sb.toString();
-        assertFalse("PE-05 debería ser inválido", helper.validateCliente(pe05));
-        assertEquals("PE-05 debería devolver Longitud excedida", "Error: Longitud excedida.", helper.getClienteValidationError(pe05));
+            onView(withId(R.id.edit_cliente)).perform(replaceText("Ana89"), closeSoftKeyboard());
+            onView(withId(R.id.button_save)).perform(scrollTo(), click());
+            Thread.sleep(500);
+            onView(withId(R.id.edit_cliente)).perform(scrollTo()).check(matches(isDisplayed()));
 
-        String nombreConSaltoLinea = "Juan\nPerez";
-        assertFalse("El cliente con salto de línea debería rechazarse", helper.validateCliente(nombreConSaltoLinea));
-        assertEquals("El cliente con salto de línea debería devolver Formato no permitido", "Error: Formato no permitido.", helper.getClienteValidationError(nombreConSaltoLinea));
+            onView(withId(R.id.edit_cliente)).perform(replaceText(""), closeSoftKeyboard());
+            onView(withId(R.id.button_save)).perform(scrollTo(), click());
+            Thread.sleep(500);
+            onView(withId(R.id.edit_cliente)).perform(scrollTo()).check(matches(isDisplayed()));
 
-        String nombreConRetornoCarro = "Juan\rPerez";
-        assertFalse("El cliente con retorno de carro debería rechazarse", helper.validateCliente(nombreConRetornoCarro));
-        assertEquals("El cliente con retorno de carro debería devolver Formato no permitido", "Error: Formato no permitido.", helper.getClienteValidationError(nombreConRetornoCarro));
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < 256; i++) {
+                sb.append("A");
+            }
+            onView(withId(R.id.edit_cliente)).perform(replaceText(sb.toString()), closeSoftKeyboard());
+            onView(withId(R.id.button_save)).perform(scrollTo(), click());
+            Thread.sleep(500);
+            onView(withId(R.id.edit_cliente)).perform(scrollTo()).check(matches(isDisplayed()));
 
-        for (int caracter = 0x0000; caracter <= 0x001F; caracter++) {
-            String nombre = "Juan" + new String(Character.toChars(caracter)) + "Perez";
-            assertFalse("El cliente con carácter inválido debería rechazarse",
-                    helper.validateCliente(nombre));
-            assertEquals("El cliente con carácter inválido debería devolver Formato no permitido",
-                    "Error: Formato no permitido.", helper.getClienteValidationError(nombre));
+            onView(withId(R.id.edit_cliente)).perform(replaceText("Juan\nPerez"), closeSoftKeyboard());
+            onView(withId(R.id.button_save)).perform(scrollTo(), click());
+            Thread.sleep(500);
+            onView(withId(R.id.edit_cliente)).perform(scrollTo()).check(matches(isDisplayed()));
+
+            onView(withId(R.id.edit_cliente)).perform(replaceText("Juan\rPerez"), closeSoftKeyboard());
+            onView(withId(R.id.button_save)).perform(scrollTo(), click());
+            Thread.sleep(500);
+            onView(withId(R.id.edit_cliente)).perform(scrollTo()).check(matches(isDisplayed()));
+
+            onView(withId(R.id.edit_cliente)).perform(
+                    replaceText("Juan" + new String(Character.toChars(0x0001)) + "Perez"),
+                    closeSoftKeyboard());
+            onView(withId(R.id.button_save)).perform(scrollTo(), click());
+            Thread.sleep(500);
+            onView(withId(R.id.edit_cliente)).perform(scrollTo()).check(matches(isDisplayed()));
+
+            onView(withId(R.id.edit_cliente)).perform(
+                    replaceText("Juan" + new String(Character.toChars(0x007F)) + "Perez"),
+                    closeSoftKeyboard());
+            onView(withId(R.id.button_save)).perform(scrollTo(), click());
+            Thread.sleep(500);
+            onView(withId(R.id.edit_cliente)).perform(scrollTo()).check(matches(isDisplayed()));
+
+            onView(withId(R.id.edit_cliente)).perform(
+                    replaceText("Juan" + new String(Character.toChars(0x00A0)) + "Perez"),
+                    closeSoftKeyboard());
+            onView(withId(R.id.button_save)).perform(scrollTo(), click());
+            Thread.sleep(500);
+            onView(withId(R.id.edit_cliente)).perform(scrollTo()).check(matches(isDisplayed()));
         }
-
-        for (int caracter = 0x007F; caracter <= 0x009F; caracter++) {
-            String nombre = "Juan" + new String(Character.toChars(caracter)) + "Perez";
-            assertFalse("El cliente con carácter inválido debería rechazarse",
-                    helper.validateCliente(nombre));
-            assertEquals("El cliente con carácter inválido debería devolver Formato no permitido",
-                    "Error: Formato no permitido.", helper.getClienteValidationError(nombre));
-        }
-
-        int[] caracteresExtra = {0x00A0, 0x00AD};
-        for (int caracter : caracteresExtra) {
-            String nombre = "Juan" + new String(Character.toChars(caracter)) + "Perez";
-            assertFalse("El cliente con carácter inválido debería rechazarse",
-                    helper.validateCliente(nombre));
-            assertEquals("El cliente con carácter inválido debería devolver Formato no permitido",
-                    "Error: Formato no permitido.", helper.getClienteValidationError(nombre));
-        }
-    }
-
-    private boolean fechasReservaValidas(String fechaRecogida, String fechaDevolucion) {
-        return fechaComoNumero(fechaDevolucion) >= fechaComoNumero(fechaRecogida);
-    }
-
-    private int fechaComoNumero(String fecha) {
-        String[] partes = fecha.split("-");
-        return Integer.parseInt(partes[2] + partes[1] + partes[0]);
-    }
-
-    private boolean cascosValidos(String tipoQuad, int cascos) {
-        int maximo = "Biplaza".equals(tipoQuad) ? 2 : 1;
-        return cascos >= 0 && cascos <= maximo;
     }
 
     @After

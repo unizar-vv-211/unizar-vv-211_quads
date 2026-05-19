@@ -21,7 +21,6 @@ import static org.junit.Assert.assertTrue;
 @RunWith(AndroidJUnit4.class)
 public class QuadSmokeTest {
 
-    // Atributo scenarioRule
     @Rule
     public ActivityScenarioRule<QuadListActivity> scenarioRule =
             new ActivityScenarioRule<>(QuadListActivity.class);
@@ -50,13 +49,13 @@ public class QuadSmokeTest {
         long insertId = repository.insert(testQuad);
         assertTrue("La inserción en la BD ha fallado", insertId >= 0);
 
-        // Comprobar que el nuevo número es una unidad mayor
+        // Comprobar que el nuevo número es uno mayor
         int quadsFinales = repository.getNumQuads();
         assertEquals("El número total de quads no se ha incrementado en 1", 
                      quadsIniciales + 1, quadsFinales);
     }
 
-    // Prueba más exhaustiva (inserción y recuperación de campos)
+    // Prueba de inserción y recuperación de campos
     @Test
     public void testInsertAndRetrieveQuadData() {
         // Insertar quad
@@ -65,11 +64,11 @@ public class QuadSmokeTest {
         // Recuperar el quad a través de su matrícula
         Quad quadRecuperado = repository.getQuadByMatricula(testQuad.getMatricula());
 
-        // Comprobaciones exhaustivas de los campos
+        // Comprobaciones  de los campos
         assertEquals("Los quads no coinciden", testQuad, quadRecuperado);
     }
 
-    // Q16: consulta de quad inexistente
+    // Consulta de quad inexistente
     @Test
     public void testGetNonExistentQuadReturnsNull() {
         Quad quadRecuperado = repository.getQuadByMatricula("NOEXIST");

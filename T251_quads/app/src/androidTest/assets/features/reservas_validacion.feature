@@ -3,7 +3,7 @@ Feature: Validacion de reservas
   Quiero que la app rechace reservas con datos invalidos
   Para evitar registros inconsistentes
 
-  # CPA-R-04, CPA-R-06, CPA-R-09, CPA-R-10, CPA-R-11, CPA-R-13
+  # CPA-R-02, CPA-R-03, CPA-R-04, CPA-R-5, CPA-R-6, CPA-R-7
   Scenario Outline: Rechazar reserva con datos invalidos
     Given Existe un quad con matricula "AAA1111" y precio "10.0"
     And Estoy en la pantalla principal de Reservas

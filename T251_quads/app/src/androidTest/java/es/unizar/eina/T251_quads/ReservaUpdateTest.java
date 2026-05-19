@@ -39,7 +39,7 @@ public class ReservaUpdateTest {
         quadRepository = new QuadRepository(ApplicationProvider.getApplicationContext());
         reservaRepository = new ReservaRepository(ApplicationProvider.getApplicationContext());
 
-        // Limpiar respetando el orden de Foreign Key
+        // Limpiar 
         reservaRepository.deleteAll();
         Thread.sleep(300);
         quadRepository.deleteAll();

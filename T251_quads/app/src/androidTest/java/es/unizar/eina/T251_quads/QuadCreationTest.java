@@ -62,7 +62,7 @@ public class QuadCreationTest {
         assertTrue("La inserción con matrícula duplicada debería devolver <= 0", result <= 0);
     }
 
-    // Q8: precio negativo
+    // Precio negativo
     @Test
     public void testPrecioNegativoEsRechazado() {
         Quad quad = new Quad("YYY7777", "Monoplaza", -10.0f, "Quad precio negativo");

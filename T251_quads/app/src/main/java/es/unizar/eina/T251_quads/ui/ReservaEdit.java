@@ -562,7 +562,7 @@ public class ReservaEdit extends AppCompatActivity {
      */
     private boolean esFechaPosterior(String fecha1, String fecha2) {
         try {
-            return fecha2.compareTo(fecha1) > 0;
+            return fecha2.compareTo(fecha1) >= 0;
         } catch (Exception e) {
             return false;
         }

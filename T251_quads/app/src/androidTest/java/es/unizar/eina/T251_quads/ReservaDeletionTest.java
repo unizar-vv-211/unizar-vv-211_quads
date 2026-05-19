@@ -61,6 +61,18 @@ public class ReservaDeletionTest {
         assertEquals("El borrado de una reserva existente debería afectar 1 fila", 1, filasAfectadas);
     }
 
+    @Test
+    public void testDeleteNonExistentReserva() {
+        Reserva reservaInexistente = new Reserva("Reserva inexistente", "699999999",
+                "10-06-2026", "11-06-2026", 1, 100.0);
+        reservaInexistente.setId(9999);
+
+        int filasAfectadas = reservaRepository.delete(reservaInexistente);
+
+        assertEquals("El borrado de una reserva inexistente debería afectar 0 filas",
+                0, filasAfectadas);
+    }
+
     @After
     public void tearDown() throws InterruptedException {
         reservaRepository.deleteAll();

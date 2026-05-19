@@ -15,6 +15,7 @@ import es.unizar.eina.T251_quads.ui.QuadListActivity;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
@@ -36,7 +37,7 @@ public class QuadSmokeTest {
         });
         
         // Creamos un quad de prueba
-        testQuad = new Quad("9999TST", "Deportivo", 45.5f, "Quad para pruebas de humo");
+        testQuad = new Quad("9999TST", "Monoplaza", 45.5f, "Quad para pruebas de humo");
     }
 
     // Prueba de averiguar número, insertar y comprobar que hay uno más
@@ -66,6 +67,15 @@ public class QuadSmokeTest {
 
         // Comprobaciones exhaustivas de los campos
         assertEquals("Los quads no coinciden", testQuad, quadRecuperado);
+    }
+
+    // Q16: consulta de quad inexistente
+    @Test
+    public void testGetNonExistentQuadReturnsNull() {
+        Quad quadRecuperado = repository.getQuadByMatricula("NOEXIST");
+
+        assertNull("La consulta de una matrícula no insertada debería devolver null",
+                quadRecuperado);
     }
 
     // Método de finalización para limpiar la base de datos

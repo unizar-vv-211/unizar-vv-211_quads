@@ -118,9 +118,7 @@ public class PruebasCaminosCompletos {
         onView(withId(R.id.card_quads)).check(matches(isDisplayed()));
     }
 
-    // ==========================================
     // MÓDULO QUADS
-    // ==========================================
 
     @Test
     public void navegacionYAccionesBasicasQuadsTest() {
@@ -143,9 +141,7 @@ public class PruebasCaminosCompletos {
         recorrerCamino(camino);
     }
 
-    // ==========================================
     // MÓDULO RESERVAS
-    // ==========================================
 
     @Test
     public void navegacionYAccionesBasicasReservasTest() {
@@ -178,10 +174,6 @@ public class PruebasCaminosCompletos {
         recorrerCamino(camino);
     }
 
-    // ==========================================
-    // CRUCES INTER-MÓDULOS
-    // ==========================================
-
     @Test
     public void navegacionCruzadaModulosTest() {
         int[] camino = { 1, 2, 1, 2, 11, 12, 11, 12, 1 };
@@ -190,7 +182,7 @@ public class PruebasCaminosCompletos {
 
     @org.junit.After
     public void limpiarTodoAlTerminar() {
-        System.out.println(">>> INICIANDO LIMPIEZA AUTOMÁTICA DE LA BASE DE DATOS...");
+        System.out.println(">>> INICIANDO LIMPIEZA DE LA BASE DE DATOS...");
 
         // 1. Intentamos vaciar las Reservas primero (por el tema de claves foráneas)
         try {
@@ -232,6 +224,6 @@ public class PruebasCaminosCompletos {
 
         // Reseteamos los contadores estáticos para la próxima prueba
         UtilidadesPruebas.generadorMatriculas = 1;
-        System.out.println(">>> BASE DE DATOS LIMPIA Y CONTROLADORES RESETEADOS.");
+        System.out.println(">>> LIMPIEZA COMPLETA.");
     }
 }

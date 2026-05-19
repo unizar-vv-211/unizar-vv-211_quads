@@ -249,7 +249,6 @@ public class UtilidadesPruebas {
                 break;
             // T21: Guardar reserva con datos realistas
             case 21:
-                generadorClientes++;
                 int anioReserva = 2030 + generadorClientes;
                 String fechaIda = "10-05-" + anioReserva;
                 String fechaVuelta = "15-05-" + anioReserva;
@@ -263,9 +262,6 @@ public class UtilidadesPruebas {
                 // Si la acción anterior fue Editar (19), pasamos null para no tocar los que ya
                 // estén.
                 String quadParaMarcar = (ultimaTransicion == 18) ? "CPS0001" : null;
-
-                // Construimos un nombre usando letras (ej: "Cliente A", "Cliente B")
-                // para superar el validador CLIENTE_PATTERN que no admite números.
                 String sufijoLetras = String.valueOf((char) ('A' + (generadorClientes % 26)));
                 String nombreCliente = "Cliente " + sufijoLetras;
 

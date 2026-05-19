@@ -62,11 +62,6 @@ public class PruebasReglasNegocio {
             Thread.sleep(500);
         } catch (Exception e) {
         }
-
-        // Verificamos que en la pantalla de la reserva sale el precio congelado (150€,
-        // no 300€)
-        // NOTA: Ajusta el texto "150" al formato exacto que muestre tu app (ej:
-        // "150.0", "150,00 €")
         onView(withId(R.id.textViewPrecioFrozen)).check(matches(withText(containsString("150"))));
 
         cancelarFormulario();
@@ -101,14 +96,8 @@ public class PruebasReglasNegocio {
         } catch (Exception e) {
         }
         rellenarYGuardarReserva("Cliente B", "123456789", "15-05-2030", "25-05-2030", "2", "SOL2222");
-
-        // 4. ASERCIÓN: Como hay solape, la app debe lanzar un error y NO cerrar la
-        // pantalla.
-        // Comprobamos que el botón de guardar sigue visible en la pantalla (la reserva
-        // no se guardó).
         onView(withId(R.id.button_save)).check(matches(isDisplayed()));
 
-        // Cancelamos para salir limpios
         cancelarFormulario();
     }
 
@@ -154,8 +143,6 @@ public class PruebasReglasNegocio {
         // Intentamos marcar el quad ocupado (OCU4444) y guardar
         rellenarYGuardarReserva("Reserva Libre Modificada", "123456789", "01-06-2030", "10-06-2030", "1", "OCU4444");
 
-        // 5. ASERCIÓN: La validación de edición debe detectar el solape.
-        // El formulario debe quedarse abierto bloqueando el guardado.
         onView(withId(R.id.button_save)).check(matches(isDisplayed()));
 
         cancelarFormulario();

@@ -14,12 +14,12 @@ import android.app.Application;
 import android.app.Instrumentation;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
+import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -36,6 +36,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 
@@ -633,8 +634,21 @@ public class RunStepsDefinition {
             openActionBarOverflowOrOptionsMenu(ApplicationProvider.getApplicationContext());
             onView(withText("Filtrar")).perform(click());
         }
-        onView(withText(filtro)).perform(click());
+        onData(anything()).atPosition(posicionFiltroReserva(filtro)).perform(click());
         waitForUi();
+    }
+
+    private int posicionFiltroReserva(String filtro) {
+        if ("Futuras".equalsIgnoreCase(filtro)) {
+            return 1;
+        }
+        if ("Activas".equalsIgnoreCase(filtro)) {
+            return 2;
+        }
+        if ("Pasadas".equalsIgnoreCase(filtro)) {
+            return 3;
+        }
+        return 0;
     }
 
     // Envio de mensajes
@@ -674,19 +688,26 @@ public class RunStepsDefinition {
     @When("Envio por SMS la reserva de {string}")
     public void envio_por_sms_la_reserva_de(String cliente) {
         Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
-        CapturingActivityMonitor monitor = new CapturingActivityMonitor();
-        instrumentation.addMonitor(monitor);
+        CapturingActivityMonitor monitor = null;
+
+        onView(withId(R.id.card_reservas)).perform(click());
+        waitUntilDisplayed(R.id.recyclerview);
 
         try {
-            onView(withId(R.id.card_reservas)).perform(click());
-            waitForUi();
+            monitor = new CapturingActivityMonitor();
+            instrumentation.addMonitor(monitor);
+
             onView(withId(R.id.recyclerview))
                     .perform(actionOnItem(hasDescendant(withText(containsString(cliente))), click()));
             onView(withText("Enviar por SMS")).perform(click());
+
+            instrumentation.waitForIdleSync();
             instrumentation.waitForMonitorWithTimeout(monitor, 5000);
             lastSendIntent = monitor.getStartedIntent();
         } finally {
-            instrumentation.removeMonitor(monitor);
+            if (monitor != null) {
+                instrumentation.removeMonitor(monitor);
+            }
         }
     }
 
@@ -709,19 +730,23 @@ public class RunStepsDefinition {
         private Intent startedIntent;
 
         CapturingActivityMonitor() {
-            super(new IntentFilter(Intent.ACTION_VIEW),
-                    new Instrumentation.ActivityResult(Activity.RESULT_OK, null),
-                    true);
+            super();
         }
 
         @Override
         public Instrumentation.ActivityResult onStartActivity(Intent intent) {
-            startedIntent = intent;
-            return new Instrumentation.ActivityResult(Activity.RESULT_OK, null);
+            if (Intent.ACTION_VIEW.equals(intent.getAction())
+                    && intent.getData() != null
+                    && intent.getData().toString().startsWith("sms:")) {
+                startedIntent = intent;
+                return new Instrumentation.ActivityResult(Activity.RESULT_OK, null);
+            }
+            return null;
         }
 
         Intent getStartedIntent() {
             return startedIntent;
         }
     }
+
 }
